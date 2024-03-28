@@ -20,8 +20,20 @@
 #include <linux/gpio.h>     //GPIO
 #include <linux/err.h>
 
-//LED is connected to this GPIO
-#define GPIO_21 (21)
+#include <linux/ctype.h>
+
+//LEDs are connected to these GPIOs
+#define LED_0 (6)
+#define LED_1 (13)
+#define LED_2 (19)
+#define LED_3 (26)
+static struct gpio leds_gpios[] =
+{
+  {LED_0, GPIOF_OUT_INIT_LOW, "LED_0"},
+  {LED_1, GPIOF_OUT_INIT_LOW, "LED_1"},
+  {LED_2, GPIOF_OUT_INIT_LOW, "LED_2"},
+  {LED_3, GPIOF_OUT_INIT_LOW, "LED_3"}
+};
  
 dev_t dev = 0;
 static struct class *dev_class;
@@ -74,20 +86,50 @@ static int etx_release(struct inode *inode, struct file *file)
 static ssize_t etx_read(struct file *filp, 
                 char __user *buf, size_t len, loff_t *off)
 {
+  char msg[2] = "0\0";
   uint8_t gpio_state = 0;
+  uint8_t n = 0;
   
-  //reading GPIO value
-  gpio_state = gpio_get_value(GPIO_21);
-  
-  //write to user
-  len = 1;
-  if( copy_to_user(buf, &gpio_state, len) > 0) {
-    pr_err("ERROR: Not all the bytes have been copied to user\n");
+  // https://linux-kernel-labs.github.io/refs/heads/master/labs/device_drivers.html#read-and-write
+  len = min(2 - *off, len);
+  if (len <= 0)
+    return 0;
+
+  // The device has only 2 byte.
+  if (*off > 1)
+    return 0;
+  else if (*off == 1)
+  {
+    if (put_user('\0', buf))
+      return -EFAULT;
+    return 1;
   }
   
-  pr_info("Read function : GPIO_21 = %d \n", gpio_state);
+  //reading GPIO values
+  gpio_state = gpio_get_value(LED_0);
+  pr_info("Read function : LED_0 = %d \n", gpio_state);
+  n |= gpio_state;
+
+  gpio_state = gpio_get_value(LED_1);
+  pr_info("Read function : LED_1 = %d \n", gpio_state);
+  n |= gpio_state << 1;
   
-  return 0;
+  gpio_state = gpio_get_value(LED_2);
+  pr_info("Read function : LED_2 = %d \n", gpio_state);
+  n |= gpio_state << 2;
+
+  gpio_state = gpio_get_value(LED_3);
+  pr_info("Read function : LED_3 = %d \n", gpio_state);
+  n |= gpio_state << 3;
+  
+  //write to user
+  msg[0] = n + '0'; // convert to ASCII
+  if ( copy_to_user(buf, msg, len) ) {
+    return -EFAULT;
+  }
+  
+  *off += len;
+  return len;
 }
 
 /*
@@ -96,24 +138,31 @@ static ssize_t etx_read(struct file *filp,
 static ssize_t etx_write(struct file *filp, 
                 const char __user *buf, size_t len, loff_t *off)
 {
-  uint8_t rec_buf[10] = {0};
-  
-  if( copy_from_user( rec_buf, buf, len ) > 0) {
+  uint8_t c = 0;
+  int n = 0;
+
+  printk(KERN_INFO "etx_write(%p, %d, %lu, %lld)", filp, (int)buf[0], len, *off);
+
+  // copy_from_user returns number of bytes that could not be copied. On success, this will be zero.
+  if (copy_from_user(&c, buf, 1) > 0)
+  {
     pr_err("ERROR: Not all the bytes have been copied from user\n");
+    return 0;
   }
+
+  n = isdigit(c) ? c - '0' : 0;
   
-  pr_info("Write Function : GPIO_21 Set = %c\n", rec_buf[0]);
+  // write to GPIOs
+  gpio_set_value(LED_0, n&1 ? 1 : 0);
+  pr_info("Write Function : LED_0 Set = %d\n", n&1 ? 1 : 0);
+  gpio_set_value(LED_1, n&2 ? 1 : 0);
+  pr_info("Write Function : LED_1 Set = %d\n", n&2 ? 1 : 0);
+  gpio_set_value(LED_2, n&4 ? 1 : 0);
+  pr_info("Write Function : LED_2 Set = %d\n", n&4 ? 1 : 0);
+  gpio_set_value(LED_3, n&8 ? 1 : 0);
+  pr_info("Write Function : LED_3 Set = %d\n", n&8 ? 1 : 0);
   
-  if (rec_buf[0]=='1') {
-    //set the GPIO value to HIGH
-    gpio_set_value(GPIO_21, 1);
-  } else if (rec_buf[0]=='0') {
-    //set the GPIO value to LOW
-    gpio_set_value(GPIO_21, 0);
-  } else {
-    pr_err("Unknown command : Please provide either 1 or 0 \n");
-  }
-  
+  *off += len;
   return len;
 }
 
@@ -151,19 +200,33 @@ static int __init etx_driver_init(void)
   }
   
   //Checking the GPIO is valid or not
-  if(gpio_is_valid(GPIO_21) == false){
-    pr_err("GPIO %d is not valid\n", GPIO_21);
+  if (gpio_is_valid(LED_0) == false)
+  {
+    pr_err("GPIO %d is not valid\n", LED_0);
+    goto r_device;
+  }
+  if (gpio_is_valid(LED_1) == false)
+  {
+    pr_err("GPIO %d is not valid\n", LED_1);
+    goto r_device;
+  }
+  if (gpio_is_valid(LED_2) == false)
+  {
+    pr_err("GPIO %d is not valid\n", LED_2);
+    goto r_device;
+  }
+  if (gpio_is_valid(LED_3) == false)
+  {
+    pr_err("GPIO %d is not valid\n", LED_3);
     goto r_device;
   }
   
-  //Requesting the GPIO
-  if(gpio_request(GPIO_21,"GPIO_21") < 0){
-    pr_err("ERROR: GPIO %d request\n", GPIO_21);
+  // request multiple GPIOs in a single call
+  if (gpio_request_array(leds_gpios, ARRAY_SIZE(leds_gpios)) < 0)
+  {
+    pr_err("Unable to request GPIOs\n");
     goto r_gpio;
   }
-  
-  //configure the GPIO as output
-  gpio_direction_output(GPIO_21, 0);
   
   /* Using this call the GPIO 21 will be visible in /sys/class/gpio/
   ** Now you can change the gpio values by using below commands also.
@@ -173,13 +236,13 @@ static int __init etx_driver_init(void)
   ** 
   ** the second argument prevents the direction from being changed.
   */
-  gpio_export(GPIO_21, false);
+  // gpio_export(GPIO_21, false);
   
   pr_info("Device Driver Insert...Done!!!\n");
   return 0;
  
 r_gpio:
-  gpio_free(GPIO_21);
+  gpio_free_array(leds_gpios, ARRAY_SIZE(leds_gpios));
 r_device:
   device_destroy(dev_class,dev);
 r_class:
@@ -197,8 +260,8 @@ r_unreg:
 */ 
 static void __exit etx_driver_exit(void)
 {
-  gpio_unexport(GPIO_21);
-  gpio_free(GPIO_21);
+  // gpio_unexport(GPIO_21);
+  gpio_free_array(leds_gpios, ARRAY_SIZE(leds_gpios));
   device_destroy(dev_class,dev);
   class_destroy(dev_class);
   cdev_del(&etx_cdev);
