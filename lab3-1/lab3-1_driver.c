@@ -221,7 +221,7 @@ static int __init etx_driver_init(void)
     goto r_device;
   }
   
-  // request multiple GPIOs in a single call
+  //Requesting and configuring multiple GPIOs in a single call
   if (gpio_request_array(leds_gpios, ARRAY_SIZE(leds_gpios)) < 0)
   {
     pr_err("Unable to request GPIOs\n");
