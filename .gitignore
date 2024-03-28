@@ -35,6 +35,7 @@
 *.i*86
 *.x86_64
 *.hex
+lab3-1/writer
 
 # Debug files
 *.dSYM/
