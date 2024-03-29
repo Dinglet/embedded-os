@@ -1,5 +1,5 @@
-'''eleven segment display of two hex digits.'''
 #!/usr/bin/python3
+'''eleven segment display of two hex digits.'''
 import sys
 
 if len(sys.argv) != 2:
