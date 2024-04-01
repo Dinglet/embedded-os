@@ -171,7 +171,7 @@ static ssize_t etx_write(struct file *filp,
 */ 
 static int __init etx_driver_init(void)
 {
-  /*Allocating Major number*/
+  // Allocate a range of char device numbers with base minor number, count, and name.
   if((alloc_chrdev_region(&dev, 0, 1, "etx_Dev")) <0){
     pr_err("Cannot allocate major number\n");
     goto r_unreg;
