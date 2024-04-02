@@ -6,7 +6,7 @@ CC = $(CROSS_COMPILE)gcc
 
 all: driver reader writer
 
-driver:
+driver: mydev.c
 	# make -C $(KDIR)  M=$(shell pwd) modules
 	make -C $(KDIR)  M=$(shell pwd) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
 
