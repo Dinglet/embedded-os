@@ -148,7 +148,7 @@ static int __init mydev_init(void)
 
     printk(KERN_INFO "mydev: registered device with major number %d\n", major);
     printk(KERN_INFO "mydev: create a device file with `mknod /dev/%s c %d 0`\n", DEVICE_NAME, major);
-    printk(KERN_INFO "Remove the device file and module `rm /dev%s && rmmod %s`when done.\n", DEVICE_NAME, DEVICE_NAME);
+    printk(KERN_INFO "Remove the device file and module `rm /dev/%s && rmmod %s`when done.\n", DEVICE_NAME, DEVICE_NAME);
     
     return 0;
 }
