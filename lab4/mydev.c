@@ -183,6 +183,8 @@ static int __init mydev_init(void)
     return 0;
 
 error:
+    if (!IS_ERR(dev))
+        device_destroy(cls, device_number);
     if (!IS_ERR(cls))
         class_destroy(cls);
     if (cdev_ret == 0)
