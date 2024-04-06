@@ -63,22 +63,25 @@ const static uint16_t alphabet_segments[ALPHABET_SIZE + 1] = {
     0b0000000000000000
 };
 
-// default display is off
-static uint16_t segments = alphabet_segments[ALPHABET_SIZE];
+// default display is off, with all segments off
+static char str_segments[16] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
 
-uint16_t get_segment_display(void)
+void set_segments(char c)
 {
-    return segments;
-}
+    int i;
+    uint16_t segment_bits = alphabet_segments[ALPHABET_SIZE];
 
-void set_segment_display(char c)
-{
     if (isupper(c))
-        segments = alphabet_segments[c - 'A'];
+        segment_bits = alphabet_segments[c - 'A'];
     else if (islower(c))
-        segments = alphabet_segments[c - 'a'];
+        segment_bits = alphabet_segments[c - 'a'];
     else
-        segments = alphabet_segments[ALPHABET_SIZE];
+        segment_bits = alphabet_segments[ALPHABET_SIZE];
+
+    for (i = 0; i < 16; ++i)
+    {
+        str_segments[i] = (segment_bits >> i) & 1 ? '1' : '0';
+    }
 }
 
 // define the file operations
@@ -97,20 +100,9 @@ static int mydev_release(struct inode *inode, struct file *file)
 
 static ssize_t mydev_read(struct file *file, char __user *buf, size_t len, loff_t *offset)
 {
-    static char str_segments[16] = {0};
-    uint16_t segments = alphabet_segments[ALPHABET_SIZE];
-    int i;
-    
     printk(KERN_INFO "mydev: read()\n");
 
     len = len > 16 ? 16 : len;
-
-    segments = get_segment_display();
-
-    for (i = 0; i < 16; ++i)
-    {
-        str_segments[i] = (segments >> i) & 1 ? '1' : '0';
-    }
 
     if (copy_to_user(buf, str_segments, len))
     {
@@ -132,7 +124,7 @@ static ssize_t mydev_write(struct file *file, const char __user *buf, size_t len
         return -EFAULT;
     }
 
-    set_segment_display(c);
+    set_segments(c);
 
     return len;
 }
