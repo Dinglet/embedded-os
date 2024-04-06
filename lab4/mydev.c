@@ -80,7 +80,7 @@ void set_segments(char c)
 
     for (i = 0; i < 16; ++i)
     {
-        str_segments[i] = (segment_bits >> i) & 1 ? '1' : '0';
+        str_segments[15-i] = (segment_bits >> i) & 1 ? '1' : '0';
     }
 }
 
