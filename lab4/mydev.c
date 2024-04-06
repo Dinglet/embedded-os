@@ -6,6 +6,7 @@ In this lab, you are required to write a Linux device driver that can control a 
 #include <linux/module.h>
 #include <linux/cdev.h>
 #include <linux/fs.h>
+#include <linux/version.h>
 
 #include <linux/ctype.h>
 
@@ -15,7 +16,11 @@ static int mydev_release(struct inode *inode, struct file *file);
 static ssize_t mydev_read(struct file *file, char __user *buf, size_t len, loff_t *offset);
 static ssize_t mydev_write(struct file *file, const char __user *buf, size_t len, loff_t *offset);
 
-static int major = 0;
+
+static dev_t device_number = 0;
+static struct cdev mydev_cdev;
+static struct class *cls = NULL;
+static struct device *dev = NULL;
 
 // declare the file operations structure
 static struct file_operations mydev_fops = {
@@ -136,27 +141,72 @@ static ssize_t mydev_write(struct file *file, const char __user *buf, size_t len
 
 static int __init mydev_init(void)
 {
+    int alloc_ret = -1;
+    int cdev_ret = -1;
     printk(KERN_INFO "mydev: init()\n");
     
-    // create and register a cdev occupying a range of minor numbers
-    major = register_chrdev(0, DEVICE_NAME, &mydev_fops);
-    if (major < 0)
+    // register a char device number
+    alloc_ret = alloc_chrdev_region(&device_number, 0, 1, DEVICE_NAME);
+    if (alloc_ret)
     {
-        printk(KERN_ERR "mydev: failed to register device\n");
-        return -1;
+        printk(KERN_ERR "mydev: failed to register a char device number\n");
+        goto error;
     }
 
-    printk(KERN_INFO "mydev: registered device with major number %d\n", major);
-    printk(KERN_INFO "mydev: create a device file with `mknod /dev/%s c %d 0`\n", DEVICE_NAME, major);
-    printk(KERN_INFO "Remove the device file and module `rm /dev/%s && rmmod %s`when done.\n", DEVICE_NAME, DEVICE_NAME);
+    // initialize a cdev structure
+    cdev_init(&mydev_cdev, &mydev_fops);
+
+    // add a char device to the system
+    cdev_ret = cdev_add(&mydev_cdev, device_number, 1);
+    if (cdev_ret)
+    {
+        printk(KERN_ERR "mydev: failed to add a char device to the system\n");
+        goto error;
+    }
+
+    printk(KERN_INFO "mydev: registered with major number %d\n", MAJOR(device_number));
     
+    // create a struct class structure
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+    cls = class_create(DEVICE_NAME);
+#else
+    cls = class_create(THIS_MODULE, DEVICE_NAME);
+#endif
+    if (IS_ERR(cls))
+    {
+        printk(KERN_ERR "mydev: failed to create a struct class\n");
+        goto error;
+    }
+
+    // creates a device and registers it with sysfs
+    dev = device_create(cls, NULL, device_number, NULL, DEVICE_NAME);
+    if (IS_ERR(dev))
+    {
+        printk(KERN_ERR "mydev: failed to create a device and register it with sysfs\n");
+        goto error;
+    }
+
+    printk(KERN_INFO "mydev: created on /dev/%s\n", DEVICE_NAME);
+
     return 0;
+
+error:
+    if (!IS_ERR(cls))
+        class_destroy(cls);
+    if (cdev_ret == 0)
+        cdev_del(&mydev_cdev);
+    if (alloc_ret == 0)
+        unregister_chrdev_region(device_number, 1);
+    return -1;
 }
 
 static void __exit mydev_exit(void)
 {
     printk(KERN_INFO "mydev: exit()\n");
-    unregister_chrdev(major, DEVICE_NAME);
+    device_destroy(cls, device_number);
+    class_destroy(cls);
+    cdev_del(&mydev_cdev);
+    unregister_chrdev_region(device_number, 1);
 }
 
 module_init(mydev_init);
