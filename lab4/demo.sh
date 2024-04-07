@@ -7,4 +7,4 @@ rmmod -f mydev
 insmod mydev.ko
 
 ./writer STUNAME & #run in subshell
-./reader 192.168.2.101 8000 /dev/mydev
+./reader 127.0.0.1 8000 /dev/mydev
