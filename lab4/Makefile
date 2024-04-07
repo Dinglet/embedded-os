@@ -1,6 +1,6 @@
 obj-m := mydev.o
 
-KDIR = ~/linux
+KDIR = /lib/modules/$(shell uname -r)/build
 
 CC = $(CROSS_COMPILE)gcc
 
