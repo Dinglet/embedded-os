@@ -6,5 +6,5 @@ set -x #prints each command and its arguments to the terminal before executing i
 rmmod -f mydev
 insmod mydev.ko
 
-./writer STUNAME & #run in subshell
+./writer "HUANG, SHIEN-TING" & #run in subshell
 ./reader 127.0.0.1 8000 /dev/mydev
