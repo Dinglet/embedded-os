@@ -2,16 +2,20 @@ obj-m += lab3-1_driver.o
 
 KDIR = /lib/modules/$(shell uname -r)/build
 
+CC = $(CROSS_COMPILE)gcc
+
 all: driver writer
 
-driver:
-	# make -C $(KDIR)  M=$(shell pwd) modules
-	make -C $(KDIR)  M=$(shell pwd) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules
+driver: lab3-1_driver.c
+ifndef CROSS_COMPILE
+	make -C $(KDIR)  M=$(shell pwd) modules
+else
+	make -C $(KDIR)  M=$(shell pwd) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) modules
+endif
 
 writer: lab3-1_writer.c
-	aarch64-linux-gnu-gcc -o writer lab3-1_writer.c
+	$(CC) -o writer lab3-1_writer.c
 
 clean:
-	# make -C $(KDIR)  M=$(shell pwd) clean
-	make -C $(KDIR)  M=$(shell pwd) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- clean
+	make -C $(KDIR)  M=$(shell pwd) clean
 	rm -f writer
