@@ -78,9 +78,11 @@ void set_segments(char c)
     else
         segment_bits = alphabet_segments[ALPHABET_SIZE];
 
-    for (i = 0; i < 16; ++i)
+    i = ARRAY_SIZE(str_segments);
+    while (i--)
     {
-        str_segments[15-i] = (segment_bits >> i) & 1 ? '1' : '0';
+        str_segments[i] = (segment_bits & 1) ? '1' : '0';
+        segment_bits >>= 1;
     }
 }
 
