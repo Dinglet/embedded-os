@@ -66,7 +66,7 @@ const static uint16_t alphabet_segments[ALPHABET_SIZE + 1] = {
 // default display is off, with all segments off
 static char str_segments[16] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
 
-void set_segments(char c)
+static void set_segments(char c)
 {
     int i;
     uint16_t segment_bits = alphabet_segments[ALPHABET_SIZE];
@@ -138,7 +138,7 @@ static int __init mydev_init(void)
     int alloc_ret = -1;
     int cdev_ret = -1;
     printk(KERN_INFO "mydev: init()\n");
-    
+
     // register a char device number
     alloc_ret = alloc_chrdev_region(&device_number, 0, 1, DEVICE_NAME);
     if (alloc_ret)
@@ -159,7 +159,7 @@ static int __init mydev_init(void)
     }
 
     printk(KERN_INFO "mydev: registered with major number %d\n", MAJOR(device_number));
-    
+
     // create a struct class structure
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
     cls = class_create(DEVICE_NAME);
