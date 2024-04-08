@@ -7,4 +7,4 @@ rmmod -f mydev
 insmod mydev.ko
 
 ./writer "HUANG, SHIEN-TING" & #run in subshell
-./reader 127.0.0.1 8000 /dev/mydev
+./reader 192.168.3.1 8000 /dev/mydev
