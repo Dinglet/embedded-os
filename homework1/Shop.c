@@ -1,45 +1,45 @@
 #include <string.h>
 
-#include "Restaurant.h"
+#include "Shop.h"
 
-struct Restaurant *createRestaurant(char *name, int distance)
+struct Shop *createShop(char *name, int distance)
 {
-    struct Restaurant *restaurant;
+    struct Shop *shop;
 
     if (name == NULL || distance < 0)
     {
         return NULL;
     }
 
-    restaurant = malloc(sizeof(struct Restaurant));
-    if (restaurant == NULL)
+    shop = malloc(sizeof(struct Shop));
+    if (shop == NULL)
     {
         return NULL;
     }
 
-    restaurant->name = malloc(strlen(name) + 1);
-    if (restaurant->name == NULL)
+    shop->name = malloc(strlen(name) + 1);
+    if (shop->name == NULL)
     {
-        free(restaurant);
+        free(shop);
         return NULL;
     }
 
-    strcpy(restaurant->name, name);
-    restaurant->distance = distance;
-    restaurant->menu = NULL;
-    return restaurant;
+    strcpy(shop->name, name);
+    shop->distance = distance;
+    shop->menu = NULL;
+    return shop;
 }
 
-void destroyRestaurant(struct Restaurant *restaurant)
+void destroyShop(struct Shop *shop)
 {
-    if (restaurant == NULL)
+    if (shop == NULL)
     {
         return;
     }
 
-    free(restaurant->name);
+    free(shop->name);
     // free all menu items
-    struct MenuItem *current = restaurant->menu;
+    struct MenuItem *current = shop->menu;
     while (current != NULL)
     {
         struct MenuItem *next = current->next;
@@ -48,15 +48,15 @@ void destroyRestaurant(struct Restaurant *restaurant)
         current = next;
     }
 
-    free(restaurant);
+    free(shop);
 }
 
-void addMenuItem(struct Restaurant *restaurant, char *name, int price)
+void addMenuItem(struct Shop *shop, char *name, int price)
 {
     struct MenuItem *item;
     struct MenuItem *current;
 
-    if (restaurant == NULL || name == NULL || price < 0)
+    if (shop == NULL || name == NULL || price < 0)
     {
         return;
     }
@@ -78,13 +78,13 @@ void addMenuItem(struct Restaurant *restaurant, char *name, int price)
     item->price = price;
     item->next = NULL;
 
-    if (restaurant->menu == NULL)
+    if (shop->menu == NULL)
     {
-        restaurant->menu = item;
+        shop->menu = item;
     }
     else
     {
-        current = restaurant->menu;
+        current = shop->menu;
         while (current->next != NULL)
         {
             current = current->next;

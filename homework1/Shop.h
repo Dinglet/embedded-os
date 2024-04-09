@@ -8,14 +8,14 @@ struct MenuItem
     struct MenuItem *next;
 };
 
-struct Restaurant
+struct Shop
 {
     char *name;
     int distance;
     struct MenuItem *menu;
 };
 
-struct Restaurant *createRestaurant(char *name, int distance);
-void destroyRestaurant(struct Restaurant *restaurant);
+struct Shop *createShop(char *name, int distance);
+void destroyShop(struct Shop *shop);
 
-void addMenuItem(struct Restaurant *restaurant, char *name, int price);
+void addMenuItem(struct Shop *shop, char *name, int price);

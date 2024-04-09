@@ -2,7 +2,7 @@ CC = $(CROSS_COMPILE)gcc
 
 all: hw1
 
-hw1: hw1.c Restaurant.c
+hw1: hw1.c Shop.c
 	$(CC) -o $@ $^
 
 clean:
