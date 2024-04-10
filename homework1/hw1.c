@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "Shop.h"
+#include "DeliveryApp.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
@@ -19,11 +20,18 @@ int main(int argc, char const *argv[])
     addMenuItem(shops[2], "fried rice", 120);
     addMenuItem(shops[2], "egg-drop soup", 50);
 
-    printf("Shops:\n");
-    for (int i = 0; i < 3; i++)
-    {
-        printShop(shops[i]);
-    }
+////////////////////////////////////////////////////////////////////////////////
+    // the terminal starts acting like a delivery app
+////////////////////////////////////////////////////////////////////////////////
+
+    struct DeliveryApp *app = createDeliveryApp(shops, ARRAY_SIZE(shops));
+    runDeliveryApp(app);
+    destroyDeliveryApp(app);
+
+////////////////////////////////////////////////////////////////////////////////
+    // end of the delivery app
+////////////////////////////////////////////////////////////////////////////////
+
     destroyShop(shops[0]);
     destroyShop(shops[1]);
     destroyShop(shops[2]);
