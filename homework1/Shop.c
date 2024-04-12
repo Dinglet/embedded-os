@@ -2,16 +2,16 @@
 
 #include "Shop.h"
 
-struct Shop *createShop(char *name, int distance)
+ShopPtr createShop(char *name, int distance)
 {
-    struct Shop *shop;
+    ShopPtr shop;
 
     if (name == NULL || distance < 0)
     {
         return NULL;
     }
 
-    shop = malloc(sizeof(struct Shop));
+    shop = malloc(sizeof(Shop));
     if (shop == NULL)
     {
         return NULL;
@@ -30,7 +30,7 @@ struct Shop *createShop(char *name, int distance)
     return shop;
 }
 
-void destroyShop(struct Shop *shop)
+void destroyShop(ShopPtr shop)
 {
     if (shop == NULL)
     {
@@ -39,10 +39,10 @@ void destroyShop(struct Shop *shop)
 
     free(shop->name);
     // free all menu items
-    struct MenuItem *current = shop->menu;
+    MenuItemPtr current = shop->menu;
     while (current != NULL)
     {
-        struct MenuItem *next = current->next;
+        MenuItemPtr next = current->next;
         free(current->name);
         free(current);
         current = next;
@@ -51,17 +51,17 @@ void destroyShop(struct Shop *shop)
     free(shop);
 }
 
-void addMenuItem(struct Shop *shop, char *name, int price)
+void addMenuItem(ShopPtr shop, char *name, int price)
 {
-    struct MenuItem *item;
-    struct MenuItem *current;
+    MenuItemPtr item;
+    MenuItemPtr current;
 
     if (shop == NULL || name == NULL || price < 0)
     {
         return;
     }
 
-    item = malloc(sizeof(struct MenuItem));
+    item = malloc(sizeof(MenuItem));
     if (item == NULL)
     {
         return;

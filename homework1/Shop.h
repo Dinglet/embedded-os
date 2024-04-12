@@ -1,21 +1,29 @@
 #pragma once
 #include <stdlib.h>
 
+struct Shop;
+typedef struct Shop Shop;
+typedef struct Shop *ShopPtr;
+
+struct MenuItem;
+typedef struct MenuItem MenuItem;
+typedef struct MenuItem *MenuItemPtr;
+
 struct MenuItem
 {
     char *name;
     int price;
-    struct MenuItem *next;
+    MenuItemPtr next;
 };
 
 struct Shop
 {
     char *name;
     int distance;
-    struct MenuItem *menu;
+    MenuItemPtr menu;
 };
 
-struct Shop *createShop(char *name, int distance);
-void destroyShop(struct Shop *shop);
+ShopPtr createShop(char *name, int distance);
+void destroyShop(ShopPtr shop);
 
-void addMenuItem(struct Shop *shop, char *name, int price);
+void addMenuItem(ShopPtr shop, char *name, int price);
