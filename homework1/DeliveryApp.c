@@ -3,19 +3,30 @@
 #include <unistd.h>
 
 #include "DeliveryApp.h"
+#include "OrderMenu.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // begin define State methods
 ////////////////////////////////////////////////////////////////////////////////
+struct State
+{
+    struct DeliveryApp *app;
+    void (*printMenu)(struct State *state);
+    int bRunning;
+};
+
 struct State *createStateMainMenu(struct DeliveryApp *app);
 struct State *createStateShopList(struct DeliveryApp *app);
-struct State *createStateOrderMenu(struct DeliveryApp *app);
+struct State *createStateShopMenu(struct DeliveryApp *app);
 struct State *createStateExit(struct DeliveryApp *app);
 void destroyState(struct State *state);
 
+// void printMenu(struct DeliveryApp *app);
 void printMainMenu(struct State *state);
 void printShopList(struct State *state);
+void printShopMenu(struct State *state);
 void printOrderMenu(struct State *state);
+void printExit(struct State *state);
 ////////////////////////////////////////////////////////////////////////////////
 // end define State methods
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +113,7 @@ struct State *createStateShopList(struct DeliveryApp *app)
     return state;
 }
 
-struct State *createStateOrderMenu(struct DeliveryApp *app)
+struct State *createStateShopMenu(struct DeliveryApp *app)
 {
     struct State *state = (struct State *)malloc(sizeof(struct State));
     if (state == NULL)
@@ -111,7 +122,7 @@ struct State *createStateOrderMenu(struct DeliveryApp *app)
     }
 
     state->app = app;
-    state->printMenu = printOrderMenu;
+    state->printMenu = printShopMenu;
     state->bRunning = 1;
     return state;
 }
@@ -125,8 +136,8 @@ struct State *createStateExit(struct DeliveryApp *app)
     }
 
     state->app = app;
-    state->printMenu = NULL;
-    state->bRunning = 0;
+    state->printMenu = printExit;
+    state->bRunning = 1;
     return state;
 }
 
@@ -144,14 +155,14 @@ void printMainMenu(struct State *state)
     printf("2. order\n");
     printf("3. exit\n");
 
-    scanf("%d", &input);
+    scanf(" %d", &input);
     switch (input)
     {
     case 1:
         changeState(app, createStateShopList(app));
         break;
     case 2:
-        changeState(app, createStateOrderMenu(app));
+        changeState(app, createStateShopMenu(app));
         break;
     case 3:
         changeState(app, createStateExit(app));
@@ -164,6 +175,8 @@ void printMainMenu(struct State *state)
 void printShopList(struct State *state)
 {
     struct DeliveryApp *app = state->app;
+    int input;
+
     if (app->nShops <= 0)
     {
         printf("No shop available\n");
@@ -179,7 +192,7 @@ void printShopList(struct State *state)
     changeState(app, createStateMainMenu(app));
 }
 
-void printOrderMenu(struct State *state)
+void printShopMenu(struct State *state)
 {
     struct DeliveryApp *app = state->app;
     int input;
@@ -196,11 +209,28 @@ void printOrderMenu(struct State *state)
         printf("%d. %s\n", i+1, app->shops[i]->name);
     }
 
-    scanf("%d", &input);
-    switch (input)
+    scanf(" %d", &input);
+    if (input < 1 || input > app->nShops)
     {
-    default:
         changeState(app, createStateMainMenu(app));
-        break;
+        return;
     }
+
+    OrderMenuPtr orderMenu = createOrderMenu(app->shops[input-1]);
+    int ret = showOrderMenu(orderMenu);
+    destroyOrderMenu(orderMenu);
+    changeState(app, createStateMainMenu(app));
+}
+
+void printOrderMenu(struct State *state)
+{
+    struct DeliveryApp *app = state->app;
+    changeState(app, createStateMainMenu(app));
+    return;
+}
+
+void printExit(struct State *state)
+{
+    state->bRunning = 0;
+    return;
 }

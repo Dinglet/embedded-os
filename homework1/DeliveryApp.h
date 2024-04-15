@@ -2,12 +2,7 @@
 
 #include "Shop.h"
 
-struct State
-{
-    struct DeliveryApp *app;
-    void (*printMenu)(struct State *state);
-    int bRunning;
-};
+struct State;
 
 struct DeliveryApp;
 

@@ -92,3 +92,23 @@ void addMenuItem(ShopPtr shop, char *name, int price)
         current->next = item;
     }
 }
+
+int countMenuItems(ShopPtr shop)
+{
+    int count = 0;
+    MenuItemPtr current;
+
+    if (shop == NULL)
+    {
+        return 0;
+    }
+
+    current = shop->menu;
+    while (current != NULL)
+    {
+        count++;
+        current = current->next;
+    }
+
+    return count;
+}

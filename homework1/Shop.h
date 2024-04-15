@@ -27,3 +27,4 @@ ShopPtr createShop(char *name, int distance);
 void destroyShop(ShopPtr shop);
 
 void addMenuItem(ShopPtr shop, char *name, int price);
+int countMenuItems(ShopPtr shop);
