@@ -45,7 +45,6 @@ int showOrderMenu(OrderMenuPtr orderMenu)
         }
         if (input == orderMenu->cart->nItems + 1)
         {
-            printf("Total price: %d\n", getTotalPrice(orderMenu));
             return STATUS_CONFIRM;
         }
         if (input == orderMenu->cart->nItems + 2)

@@ -14,3 +14,6 @@ void runDeliveryApp(struct DeliveryApp *app);
 int isRunning(struct DeliveryApp *app);
 void printMenu(struct DeliveryApp *app);
 void changeState(struct DeliveryApp *app, struct State *state);
+
+void showNumber(int n);
+void countDown(int n);

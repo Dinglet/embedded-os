@@ -83,6 +83,27 @@ void changeState(struct DeliveryApp *app, struct State *state)
     app->state = state;
 }
 
+void showNumber(int n)
+{
+    printf("Total price: $%d\n", n);
+}
+
+void countDown(int n)
+{
+    if (n <= 0)
+    {
+        return;
+    }
+
+    for (int i = n; i > 0; i--)
+    {
+        printf("Delivery in %d seconds\n", i);
+        sleep(1);
+    }
+
+    printf("Delivery arrived\n");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 struct State *createStateMainMenu(struct DeliveryApp *app)
@@ -218,6 +239,15 @@ void printShopMenu(struct State *state)
 
     OrderMenuPtr orderMenu = createOrderMenu(app->shops[input-1]);
     int ret = showOrderMenu(orderMenu);
+    if (ret == STATUS_CONFIRM)
+    {
+        // asynchronously show total price
+        //TODO: make it asynchronous
+        showNumber(getTotalPrice(orderMenu));
+
+        // count down delivery time
+        countDown(orderMenu->shop->distance);
+    }
     destroyOrderMenu(orderMenu);
     changeState(app, createStateMainMenu(app));
 }
