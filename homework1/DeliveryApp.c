@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <fcntl.h>
 
 #include "DeliveryApp.h"
 #include "OrderMenu.h"
+
+#define DEVICE_NAME "/dev/mydev"
 
 ////////////////////////////////////////////////////////////////////////////////
 // begin define State methods
@@ -91,18 +94,35 @@ void showNumber(int n)
 
 void countDown(int n)
 {
+    int i = 0, fd = -1;
     if (n <= 0)
     {
         return;
     }
 
-    for (int i = n; i > 0; i--)
+    fd = open(DEVICE_NAME, O_RDONLY);
+    if (fd == -1)
     {
-        printf("Delivery in %d seconds\n", i);
-        sleep(1);
+        fprintf(stderr, "open %s failed, use stdout instead\n", DEVICE_NAME);
+
+        for (i = n; i > 0; i--)
+        {
+            printf("Delivery in %d seconds\n", i);
+            sleep(1);
+        }
+
+        printf("Delivery arrived\n");
+        return;
     }
 
-    printf("Delivery arrived\n");
+    for (i = n; i > 0; i--)
+    {
+        write(fd, &i, sizeof(int));
+        sleep(1);
+    }
+    i = 0;
+    write(fd, &i, sizeof(int));
+    close(fd);
 }
 
 void *threadShowNumber(void *arg)
