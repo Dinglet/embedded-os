@@ -121,7 +121,7 @@ void countDown(int n)
         return;
     }
 
-    fd = open(DEVICE_NAME, O_RDONLY);
+    fd = open(DEVICE_NAME, O_WRONLY);
     if (fd == -1)
     {
         fprintf(stderr, "open %s failed, use stdout instead\n", DEVICE_NAME);
