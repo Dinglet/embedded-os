@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "DeliveryApp.h"
 #include "OrderMenu.h"
@@ -102,6 +103,13 @@ void countDown(int n)
     }
 
     printf("Delivery arrived\n");
+}
+
+void *threadShowNumber(void *arg)
+{
+    int n = *(int*)arg;
+    showNumber(n);
+    pthread_exit(NULL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -242,8 +250,13 @@ void printShopMenu(struct State *state)
     if (ret == STATUS_CONFIRM)
     {
         // asynchronously show total price
-        //TODO: make it asynchronous
-        showNumber(getTotalPrice(orderMenu));
+        pthread_t thread;
+        int n = getTotalPrice(orderMenu);
+        ret = pthread_create(&thread, NULL, threadShowNumber, (void*)&n);
+        if (ret != 0)
+        {
+            fprintf(stderr, "pthread_create failed\n");
+        }
 
         // count down delivery time
         countDown(orderMenu->shop->distance);

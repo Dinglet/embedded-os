@@ -17,3 +17,4 @@ void changeState(struct DeliveryApp *app, struct State *state);
 
 void showNumber(int n);
 void countDown(int n);
+void *threadShowNumber(void *arg);
