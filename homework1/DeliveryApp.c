@@ -8,6 +8,7 @@
 #include "OrderMenu.h"
 
 #define DEVICE_NAME "/dev/mydev"
+#define DEVICE_PRICE "/dev/7-segment"
 
 ////////////////////////////////////////////////////////////////////////////////
 // begin define State methods
@@ -89,7 +90,27 @@ void changeState(struct DeliveryApp *app, struct State *state)
 
 void showNumber(int n)
 {
-    printf("Total price: $%d\n", n);
+    int i = 0, fd = -1;
+    if (n < 0)
+    {
+        return;
+    }
+
+    fd = open(DEVICE_PRICE, O_WRONLY);
+    if (fd == -1)
+    {
+        fprintf(stderr, "open %s failed, use stdout instead\n", DEVICE_PRICE);
+        printf("Total price: $%d\n", n);
+        return;
+    }
+
+    do
+    {
+        i = n % 10;
+        write(fd, &i, sizeof(int));
+        n /= 10;
+    } while (n);
+    close(fd);
 }
 
 void countDown(int n)
