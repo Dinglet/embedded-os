@@ -28,6 +28,8 @@ static const struct file_operations operations = {
     .write = segments_write,
 };
 
+char segments[FILE_MAX_SIZE] = {0};
+
 static int __init segments_init(void)
 {
     int alloc_ret = -1;
@@ -114,12 +116,34 @@ int segments_release(struct inode *inode, struct file *file)
 
 static ssize_t segments_read(struct file *file, char __user *buffer, size_t size, loff_t *offset)
 {
-    return -EINVAL;
+    size_t i = *offset % FILE_MAX_SIZE;
+    printk(KERN_INFO "segments: read()\n");
+
+    size = size > (FILE_MAX_SIZE - i) ? (FILE_MAX_SIZE - i) : size;
+
+    if (copy_to_user(buffer, segments + i, size))
+    {
+        printk(KERN_ERR "segments: failed to copy data to user space\n");
+        return -EFAULT;
+    }
+    return size;
 }
 
 static ssize_t segments_write(struct file *file, const char __user *buffer, size_t size, loff_t *offset)
 {
-    return -EINVAL;
+    size_t i = *offset % FILE_MAX_SIZE;
+    printk(KERN_INFO "segments: write()\n");
+
+    size = size > (FILE_MAX_SIZE - i) ? (FILE_MAX_SIZE - i) : size;
+
+    if (copy_from_user(segments + i, buffer, size))
+    {
+        printk(KERN_ERR "segments: failed to copy data from user space\n");
+        return -EFAULT;
+    }
+
+    *offset += size;
+    return size;
 }
 
 module_init(segments_init);
