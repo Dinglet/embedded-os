@@ -10,8 +10,8 @@
 
 static int __init segments_init(void);
 static void __exit segments_exit(void);
-// static int segments_open(struct inode *inode, struct file *file);
-// static int segments_release(struct inode *inode, struct file *file);
+static int segments_open(struct inode *inode, struct file *file);
+static int segments_release(struct inode *inode, struct file *file);
 static ssize_t segments_read(struct file *file, char __user *buffer, size_t size, loff_t *offset);
 static ssize_t segments_write(struct file *file, const char __user *buffer, size_t size, loff_t *offset);
 
@@ -22,6 +22,8 @@ static struct device *dev = NULL;
 
 static const struct file_operations operations = {
     .owner = THIS_MODULE,
+    .open = segments_open,
+    .release = segments_release,
     .read = segments_read,
     .write = segments_write,
 };
@@ -96,6 +98,18 @@ static void __exit segments_exit(void)
     class_destroy(cls);
     cdev_del(&segments_cdev);
     unregister_chrdev_region(device_number, 1);
+}
+
+int segments_open(struct inode *inode, struct file *file)
+{
+    printk(KERN_INFO "segments: open()\n");
+    return 0;
+}
+
+int segments_release(struct inode *inode, struct file *file)
+{
+    printk(KERN_INFO "segments: release()\n");
+    return 0;
 }
 
 static ssize_t segments_read(struct file *file, char __user *buffer, size_t size, loff_t *offset)
