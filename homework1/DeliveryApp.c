@@ -293,11 +293,11 @@ void printShopMenu(struct State *state)
 
     OrderMenuPtr orderMenu = createOrderMenu(app->shops[input-1]);
     int ret = showOrderMenu(orderMenu);
-    if (ret == STATUS_CONFIRM)
+    int n = getTotalPrice(orderMenu);
+    if (ret == STATUS_CONFIRM && n > 0)
     {
         // asynchronously show total price
         pthread_t thread;
-        int n = getTotalPrice(orderMenu);
         ret = pthread_create(&thread, NULL, threadShowNumber, (void*)&n);
         if (ret != 0)
         {
