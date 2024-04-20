@@ -229,7 +229,7 @@ void printMainMenu(struct State *state)
 
     printf("1. shop list\n");
     printf("2. order\n");
-    printf("3. exit\n");
+    // printf("3. exit\n");
 
     while (getIntegerInput(&input) != 0 || input < 1 || input > 3)
     {
