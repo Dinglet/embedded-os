@@ -7,7 +7,7 @@
 #include <linux/gpio.h>
 
 #define FILE_SIZE 4
-#define CLASS_NAME "mygpio" // /sys/class/gpio/<CLASS_NAME>
+#define CLASS_NAME "gpio-leds" // /sys/class/gpio/<CLASS_NAME>
 #define DEVICE_NAME "leds" // /dev/<DEVICE_NAME>
 
 static int __init leds_init(void);
