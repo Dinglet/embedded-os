@@ -7,7 +7,7 @@ CC = $(CROSS_COMPILE)gcc
 
 all: hw1 driver
 
-hw1: hw1.c Shop.c DeliveryApp.c OrderMenu.c Cart.c
+hw1: hw1.c Shop.c DeliveryApp.c OrderMenu.c Cart.c common.c
 	$(CC) -o $@ $^ -lpthread
 
 driver: leds.c segments.c
