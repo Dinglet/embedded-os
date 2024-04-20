@@ -90,7 +90,8 @@ void changeState(struct DeliveryApp *app, struct State *state)
 
 void showNumber(int n)
 {
-    int i = 0, fd = -1;
+    int fd = -1;
+    char strNumber[11] = {0}, *p = 0;
     if (n < 0)
     {
         return;
@@ -104,12 +105,16 @@ void showNumber(int n)
         return;
     }
 
-    do
+    sprintf(strNumber, "%d", n);
+    p = strNumber;
+    while (*p)
     {
-        i = n % 10;
-        write(fd, &i, sizeof(int));
-        n /= 10;
-    } while (n);
+        printf("Writing %d for price\n", *p);
+        write(fd, p, sizeof(char));
+        usleep(500000);
+        p++;
+    }
+
     close(fd);
 }
 
