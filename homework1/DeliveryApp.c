@@ -304,8 +304,12 @@ void printShopMenu(struct State *state)
             fprintf(stderr, "pthread_create failed\n");
         }
 
+        printf("Please wait for a few minutes...\n");
+
         // count down delivery time
         countDown(orderMenu->shop->distance);
+
+        printf("please pick up your meal\n");
     }
     destroyOrderMenu(orderMenu);
     changeState(app, createStateMainMenu(app));
