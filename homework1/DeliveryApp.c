@@ -109,7 +109,7 @@ void showNumber(int n)
     p = strNumber;
     while (*p)
     {
-        printf("Writing %d for price\n", *p);
+        // printf("Writing %d for price\n", *p);
         write(fd, p, sizeof(char));
         usleep(500000);
         p++;
