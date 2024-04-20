@@ -34,8 +34,8 @@ static char segments[FILE_SIZE] = {0};
 
 static struct gpio segments_gpios[] =
 {
-    { 7, GPIOF_OUT_INIT_LOW, "SEGMENT_A"},
-    { 5, GPIOF_OUT_INIT_LOW, "SEGMENT_B"},
+    { 4, GPIOF_OUT_INIT_LOW, "SEGMENT_A"},
+    { 3, GPIOF_OUT_INIT_LOW, "SEGMENT_B"},
     {14, GPIOF_OUT_INIT_LOW, "SEGMENT_C"},
     {15, GPIOF_OUT_INIT_LOW, "SEGMENT_D"},
     {18, GPIOF_OUT_INIT_LOW, "SEGMENT_E"},
