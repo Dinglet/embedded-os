@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "OrderMenu.h"
+#include "common.h"
 
 OrderMenuPtr createOrderMenu(ShopPtr shop)
 {
@@ -37,12 +38,11 @@ int showOrderMenu(OrderMenuPtr orderMenu)
         printf("%d. confirm\n", orderMenu->cart->nItems + 1);
         printf("%d. cancel\n", orderMenu->cart->nItems + 2);
 
-        scanf(" %d", &input);
-        if (input < 1 || input > orderMenu->cart->nItems + 2)
+        while (getIntegerInput(&input) != 0 || input < 1 || input > orderMenu->cart->nItems + 2)
         {
-            printf("Invalid input\n");
-            continue;
+            printf("Invalid input!\n");
         }
+
         if (input == orderMenu->cart->nItems + 1)
         {
             return STATUS_CONFIRM;
@@ -52,16 +52,12 @@ int showOrderMenu(OrderMenuPtr orderMenu)
             return STATUS_CANCEL;
         }
 
-        do
+        printf("How many?\n");
+
+        while (getIntegerInput(&quantity) != 0 || addItemToOrder(orderMenu, input - 1, quantity) == -1)
         {
-            printf("How many?\n");
-            scanf(" %d", &quantity);
-            ret = addItemToOrder(orderMenu, input - 1, quantity);
-            if (ret == -1)
-            {
-                printf("Invalid input\n");
-            }
-        } while (ret == -1);
+            printf("Invalid input!\n");
+        }
     }
     return 0;
 }

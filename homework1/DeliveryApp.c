@@ -6,6 +6,7 @@
 
 #include "DeliveryApp.h"
 #include "OrderMenu.h"
+#include "common.h"
 
 #define DEVICE_DISTANCE "/dev/leds"
 #define DEVICE_PRICE "/dev/segments"
@@ -230,7 +231,11 @@ void printMainMenu(struct State *state)
     printf("2. order\n");
     printf("3. exit\n");
 
-    scanf(" %d", &input);
+    while (getIntegerInput(&input) != 0 || input < 1 || input > 3)
+    {
+        printf("Invalid input!\n");
+    }
+
     switch (input)
     {
     case 1:
@@ -264,6 +269,8 @@ void printShopList(struct State *state)
         printf("%s: %dkm\n", app->shops[i]->name, app->shops[i]->distance);
     }
 
+    waitForKey();
+
     changeState(app, createStateMainMenu(app));
 }
 
@@ -284,11 +291,9 @@ void printShopMenu(struct State *state)
         printf("%d. %s\n", i+1, app->shops[i]->name);
     }
 
-    scanf(" %d", &input);
-    if (input < 1 || input > app->nShops)
+    while (getIntegerInput(&input) != 0 || input < 1 || input > app->nShops)
     {
-        changeState(app, createStateMainMenu(app));
-        return;
+        printf("Invalid input!\n");
     }
 
     OrderMenuPtr orderMenu = createOrderMenu(app->shops[input-1]);
@@ -310,6 +315,7 @@ void printShopMenu(struct State *state)
         countDown(orderMenu->shop->distance);
 
         printf("please pick up your meal\n");
+        waitForKey();
     }
     destroyOrderMenu(orderMenu);
     changeState(app, createStateMainMenu(app));
