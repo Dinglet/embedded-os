@@ -7,8 +7,8 @@
 #include "DeliveryApp.h"
 #include "OrderMenu.h"
 
-#define DEVICE_NAME "/dev/mydev"
-#define DEVICE_PRICE "/dev/7-segment"
+#define DEVICE_DISTANCE "/dev/leds"
+#define DEVICE_PRICE "/dev/segments"
 
 ////////////////////////////////////////////////////////////////////////////////
 // begin define State methods
@@ -121,10 +121,10 @@ void countDown(int n)
         return;
     }
 
-    fd = open(DEVICE_NAME, O_WRONLY);
+    fd = open(DEVICE_DISTANCE, O_WRONLY);
     if (fd == -1)
     {
-        fprintf(stderr, "open %s failed, use stdout instead\n", DEVICE_NAME);
+        fprintf(stderr, "open %s failed, use stdout instead\n", DEVICE_DISTANCE);
 
         for (i = n; i > 0; i--)
         {

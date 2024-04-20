@@ -1,4 +1,4 @@
-obj-m := segments.o
+obj-m := leds.o
 
 KDIR = /lib/modules/$(shell uname -r)/build
 
@@ -9,7 +9,7 @@ all: hw1 driver
 hw1: hw1.c Shop.c DeliveryApp.c OrderMenu.c Cart.c
 	$(CC) -o $@ $^ -lpthread
 
-driver: segments.c
+driver: leds.c
 ifndef CROSS_COMPILE
 	make -C $(KDIR)  M=$(shell pwd) modules
 else
