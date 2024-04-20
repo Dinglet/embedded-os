@@ -32,7 +32,7 @@ int showOrderMenu(OrderMenuPtr orderMenu)
         printf("Please choose from 1~%d\n", orderMenu->cart->nItems + 2);
         for (int i = 0; i < orderMenu->cart->nItems; i++)
         {
-            printf("%d. %s: %d\n", i + 1, orderMenu->cart->items[i]->name, orderMenu->cart->items[i]->price);
+            printf("%d. %s: $%d\n", i + 1, orderMenu->cart->items[i]->name, orderMenu->cart->items[i]->price);
         }
         printf("%d. confirm\n", orderMenu->cart->nItems + 1);
         printf("%d. cancel\n", orderMenu->cart->nItems + 2);
