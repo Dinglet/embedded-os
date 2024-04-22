@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     signal(SIGCHLD, handler);
 
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket == -1)
+    if (serverSocket < 0)
     {
         perror("socket()");
         exit(EXIT_FAILURE);
@@ -44,13 +44,13 @@ int main(int argc, char *argv[])
 
     setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 
-    if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1)
+    if (bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
     {
         perror("bind()");
         exit(EXIT_FAILURE);
     }
 
-    if (listen(serverSocket, 5) == -1)
+    if (listen(serverSocket, 5) < 0)
     {
         perror("listen()");
         exit(EXIT_FAILURE);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
         at a time using accept(2). */
 
     clientSocket = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressSize);
-    if (clientSocket == -1)
+    if (clientSocket < 0)
     {
         perror("accept()");
         exit(EXIT_FAILURE);
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     close(clientSocket);
     execlp("sl", "sl", "-l", NULL);
 
-    if (close(serverSocket) == -1)
+    if (close(serverSocket) < 0)
     {
         perror("close()");
         exit(EXIT_FAILURE);
