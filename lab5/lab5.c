@@ -63,13 +63,11 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    send(clientSocket, "Hello, World!", 13, 0);
-
-    if (close(clientSocket) == -1)
-    {
-        perror("close()");
-        exit(EXIT_FAILURE);
-    }
+    // duplicate the client socket file descriptor
+    // the file descriptor STDOUT_FILENO is adjusted so that it refers to the client socket descriptor
+    dup2(clientSocket, STDOUT_FILENO);
+    close(clientSocket);
+    execlp("sl", "sl", "-l", NULL);
 
     if (close(serverSocket) == -1)
     {
