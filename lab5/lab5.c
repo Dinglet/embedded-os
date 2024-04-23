@@ -10,6 +10,8 @@
 int serverSocket = -1;
 int clientSocket = -1;
 
+#define MAX_CLIENTS 3
+
 void sigint_handler(int signum)
 {
     if (serverSocket != -1)
@@ -50,7 +52,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    if (listen(serverSocket, 5) < 0)
+    if (listen(serverSocket, MAX_CLIENTS) < 0)
     {
         perror("listen()");
         exit(EXIT_FAILURE);
@@ -58,23 +60,53 @@ int main(int argc, char *argv[])
 
     /* Now we can accept incoming connections one
         at a time using accept(2). */
-
-    clientSocket = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressSize);
-    if (clientSocket < 0)
+    while ((clientSocket = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressSize)) >= 0)
     {
-        perror("accept()");
-        exit(EXIT_FAILURE);
-    }
+        pid_t child = fork();
+        if (child == -1)
+        {
+            perror("fork()");
+            close(clientSocket);
+            continue;
+        }
+        else if (child > 0)
+        {
+            // parent process
+            printf("Train ID: %d\n", child);
+            close(clientSocket);
+            continue;
+        }
+        else
+        {
+            // child process
+            if (close(serverSocket) < 0)
+            {
+                perror("close(serverSocket)");
+                exit(EXIT_FAILURE);
+            }
 
-    // duplicate the client socket file descriptor
-    // the file descriptor STDOUT_FILENO is adjusted so that it refers to the client socket descriptor
-    dup2(clientSocket, STDOUT_FILENO);
-    close(clientSocket);
-    execlp("sl", "sl", "-l", NULL);
+            // duplicate the client socket file descriptor
+            // the file descriptor STDOUT_FILENO is adjusted so that it refers to the client socket descriptor
+            dup2(clientSocket, STDOUT_FILENO);
+            if (close(clientSocket) < 0)
+            {
+                perror("close(clientSocket)");
+                exit(EXIT_FAILURE);
+            }
+            // // code here can print different process IDs to different sockets
+            // for (int i = 0; i < 10; i++)
+            // {
+            //     printf("pid: %d\n", getpid());
+            //     sleep(1);
+            // }
+            execlp("sl", "sl", "-l", NULL);
+            exit(EXIT_SUCCESS);
+        }
+    }
 
     if (close(serverSocket) < 0)
     {
-        perror("close()");
+        perror("close(serverSocket)");
         exit(EXIT_FAILURE);
     }
 
