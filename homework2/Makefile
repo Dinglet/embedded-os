@@ -5,9 +5,9 @@ KDIR = /lib/modules/$(shell uname -r)/build
 
 CC = $(CROSS_COMPILE)gcc
 
-all: hw1 driver
+all: hw2 driver
 
-hw1: hw1.c Shop.c DeliveryApp.c OrderMenu.c Cart.c common.c
+hw2: hw2.c Shop.c DeliveryApp.c OrderMenu.c Cart.c common.c
 	$(CC) -o $@ $^ -lpthread
 
 driver: leds.c segments.c
@@ -18,5 +18,5 @@ else
 endif
 
 clean:
-	rm -f hw1
+	rm -f hw2
 	make -C $(KDIR)  M=$(shell pwd) clean
