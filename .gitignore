@@ -41,6 +41,10 @@ lab4/writer
 homework1/hw1
 lab5/lab5
 
+lab6/examples/makesem
+lab6/examples/rmsem
+lab6/examples/doodle
+
 # Debug files
 *.dSYM/
 *.su
