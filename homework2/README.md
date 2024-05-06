@@ -1,1 +1,1 @@
-# Homework 2: Delivery Management System (online version)
+# Homework 2: Delivery Platform (online version)
