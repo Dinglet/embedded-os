@@ -13,3 +13,9 @@ There are 2 types of semaphores in Linux, namely System V semaphores and POSIX s
 - `makesem` creates a semaphore.
 - `rmsem` removes a semaphore.
 - `doodle` is an application with the wait (P) and signal (V) operations implemented, using a semaphore created previously.
+
+### Race Condition
+
+To compile the application `race` with the semaphore feature, run `make CFLAGS="-DUSE_SEM" race`. Otherwise, the command `make race` compiles with the macro `USE_SEM` undefined.
+
+Before running `race`, run `echo 0 > counter.txt` to initialize a file.

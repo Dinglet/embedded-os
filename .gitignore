@@ -44,6 +44,7 @@ lab5/lab5
 lab6/examples/makesem
 lab6/examples/rmsem
 lab6/examples/doodle
+lab6/examples/race
 
 # Debug files
 *.dSYM/
