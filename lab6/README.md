@@ -19,3 +19,7 @@ There are 2 types of semaphores in Linux, namely System V semaphores and POSIX s
 To compile the application `race` with the semaphore feature, run `make CFLAGS="-DUSE_SEM" race`. Otherwise, the command `make race` compiles with the macro `USE_SEM` undefined.
 
 Before running `race`, run `echo 0 > counter.txt` to initialize a file.
+
+### Mutex
+
+In the mutex example application `mutex`, multiple threads are about to enter a critical section. A mutex shared with those threads protects the critical section.
