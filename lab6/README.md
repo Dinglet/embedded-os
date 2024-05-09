@@ -23,3 +23,7 @@ Before running `race`, run `echo 0 > counter.txt` to initialize a file.
 ### Mutex
 
 In the mutex example application `mutex`, multiple threads are about to enter a critical section. A mutex shared with those threads protects the critical section.
+
+### Pipe
+
+The process `pipe <file>` opens the `<file>` for reading and then transfers contents to another process with a pipe. The receiver writes received contents to the standard output.

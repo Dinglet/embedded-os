@@ -46,6 +46,7 @@ lab6/examples/rmsem
 lab6/examples/doodle
 lab6/examples/race
 lab6/examples/mutex
+lab6/examples/pipe
 
 # Debug files
 *.dSYM/
