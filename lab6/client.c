@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <arpa/inet.h>
 
 // client <ip> <port> <deposit/withdraw> <amount> <times>
