@@ -48,6 +48,8 @@ lab6/examples/race
 lab6/examples/mutex
 lab6/examples/pipe
 lab6/examples/select
+lab6/examples/shm_server
+lab6/examples/shm_client
 
 # Debug files
 *.dSYM/
