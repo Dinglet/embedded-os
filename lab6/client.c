@@ -29,9 +29,14 @@ int main(int argc, char const *argv[])
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     int result = inet_pton(AF_INET, strAddress, &(sa.sin_addr));
-    if (result != 1)
+    if (result < 0)
     {
-        printf("Invalid IPv4 network address: %s (inet_pton returns %d)\n", strAddress, result);
+        perror("inet_pton()");
+        return EXIT_FAILURE;
+    }
+    else if (result == 0)
+    {
+        printf("Invalid IPv4 network address: %s\n", strAddress);
         return EXIT_FAILURE;
     }
     // if (port <= 0 || port > 65535)
