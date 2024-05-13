@@ -41,7 +41,7 @@ void sigchldHandler(int signum)
 
 void *connectionHandler(void *arg)
 {
-    pid_t tid = gettid();
+    pthread_detach(pthread_self());
     int i = 0;
 
     int clientSocket = *(int *) arg;
@@ -63,7 +63,7 @@ void *connectionHandler(void *arg)
         char *strTransaction = (transactionType == DEPOSIT) ? "deposit" : (transactionType == WITHDRAW) ? "withdraw" : "invalid";
 
         balance += (transactionType == DEPOSIT) ? amount : -amount;
-        printf("(%d) After %s: %d\n", tid, strTransaction, balance);
+        printf("After %s: %d\n", strTransaction, balance);
     }
     if (count < 0)
     {
@@ -124,7 +124,6 @@ int main(int argc, char *argv[])
             perror("pthread_create()");
             exit(EXIT_FAILURE);
         }
-        pthread_join(thread, NULL);
 
         clientAddressSize = sizeof(clientAddress);
     }
