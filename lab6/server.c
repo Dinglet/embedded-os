@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <pthread.h>
+#include <sys/sem.h>
 
 int balance = 0;
 int serverSocket = -1;
@@ -28,10 +29,18 @@ typedef struct Transaction
     int amount;
 } Transaction;
 
+int sem_init(int key, int value);
+int sem_close(int key);
+
+int mySemid = -1;
+int sem_wait(int semid);
+int sem_signal(int semid);
+
 void sigintHandler(int signum)
 {
     if (serverSocket != -1)
         close(serverSocket);
+    sem_close(mySemid);
 }
 
 void sigchldHandler(int signum)
@@ -39,7 +48,6 @@ void sigchldHandler(int signum)
     while (waitpid(-1, NULL, WNOHANG) > 0);
 }
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 void *connectionHandler(void *arg)
 {
     int i = 0;
@@ -62,10 +70,10 @@ void *connectionHandler(void *arg)
         int amount = transaction.amount;
         char *strTransaction = (transactionType == DEPOSIT) ? "deposit" : (transactionType == WITHDRAW) ? "withdraw" : "invalid";
 
-        pthread_mutex_lock(&mutex);
+        sem_wait(mySemid);
         balance += (transactionType == DEPOSIT) ? amount : -amount;
         printf("After %s: %d\n", strTransaction, balance);
-        pthread_mutex_unlock(&mutex);
+        sem_signal(mySemid);
     }
     if (count < 0)
     {
@@ -85,6 +93,7 @@ int main(int argc, char *argv[])
     int option = 1;
     int clientSocket;
 
+    mySemid = sem_init(0x1234, 1);
     signal(SIGINT, sigintHandler);
     signal(SIGCHLD, sigchldHandler);
 
@@ -146,5 +155,72 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    sem_close(mySemid);
+
     return 0;
+}
+
+int sem_init(int key, int value)
+{
+    int semid = semget(key, 1, IPC_CREAT | IPC_EXCL | 0600);
+    if (semid < 0)
+    {
+        perror("semget()");
+        return -1;
+    }
+
+    if (semctl(semid, 0, SETVAL, value) < 0)
+    {
+        perror("semctl()");
+        return -1;
+    }
+
+    return semid;
+}
+
+int sem_close(int semid)
+{
+    if (semctl(semid, 0, IPC_RMID) < 0)
+    {
+        perror("semctl()");
+        return -1;
+    }
+
+    return 0;
+}
+
+int sem_wait(int semid)
+{
+    struct sembuf sops; /* the operation parameters */
+    sops.sem_num = 0; /* access the 1st (and only) sem in the array */
+    sops.sem_op = -1; /* wait..*/
+    sops.sem_flg = 0; /* no special options needed */
+
+    if (semop(semid, &sops, 1) < 0)
+    {
+        perror("semop() in wait()");
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int sem_signal(int semid)
+{
+    struct sembuf sops; /* the operation parameters */
+    sops.sem_num = 0; /* the 1st (and only) sem in the array */
+    sops.sem_op = 1; /* signal */
+    sops.sem_flg = 0; /* no special options needed */
+
+    if (semop(semid, &sops, 1) < 0)
+    {
+        perror("semop() in signal()");
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
 }
