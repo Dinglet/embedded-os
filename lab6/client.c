@@ -96,29 +96,27 @@ int main(int argc, char const *argv[])
     Transaction transaction = {transactionType, amount};
 
     int server;
+    if ((server = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
+        perror("socket()");
+        exit(EXIT_FAILURE);
+    }
+    if (connect(server, (struct sockaddr *) &sa, sizeof(sa)) < 0)
+    {
+        perror("connect()");
+        exit(EXIT_FAILURE);
+    }
     for (i = 0; i < time; i++)
     {
-        if ((server = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        {
-            perror("socket()");
-            exit(EXIT_FAILURE);
-        }
-        if (connect(server, (struct sockaddr *) &sa, sizeof(sa)) < 0)
-        {
-            perror("connect()");
-            exit(EXIT_FAILURE);
-        }
-
         // send transaction
         if (send(server, &transaction, sizeof(transaction), 0) < 0)
         {
             perror("send()");
             exit(EXIT_FAILURE);
         }
-
-        // close connection
-        close(server);
     }
+    // close connection
+    close(server);
 
     return EXIT_SUCCESS;
 }
