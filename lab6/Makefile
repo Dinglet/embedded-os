@@ -1,7 +1,7 @@
 all: server client
 
 server: server.c
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -pthread -o $@ $^
 
 client: client.c
 	$(CC) $(CFLAGS) -o $@ $^
