@@ -39,9 +39,9 @@ void sigchldHandler(int signum)
     while (waitpid(-1, NULL, WNOHANG) > 0);
 }
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 void *connectionHandler(void *arg)
 {
-    pthread_detach(pthread_self());
     int i = 0;
 
     int clientSocket = *(int *) arg;
@@ -62,8 +62,10 @@ void *connectionHandler(void *arg)
         int amount = transaction.amount;
         char *strTransaction = (transactionType == DEPOSIT) ? "deposit" : (transactionType == WITHDRAW) ? "withdraw" : "invalid";
 
+        pthread_mutex_lock(&mutex);
         balance += (transactionType == DEPOSIT) ? amount : -amount;
         printf("After %s: %d\n", strTransaction, balance);
+        pthread_mutex_unlock(&mutex);
     }
     if (count < 0)
     {
@@ -118,13 +120,18 @@ int main(int argc, char *argv[])
     {
         // use pthread to handle each connection
 
+        pthread_attr_t attr;
         pthread_t thread;
-        if (pthread_create(&thread, NULL, connectionHandler, (void *) &clientSocket) < 0)
+
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+        if (pthread_create(&thread, &attr, connectionHandler, (void *) &clientSocket) < 0)
         {
             perror("pthread_create()");
             exit(EXIT_FAILURE);
         }
 
+        pthread_attr_destroy(&attr);
         clientAddressSize = sizeof(clientAddress);
     }
     if (clientSocket < 0)
