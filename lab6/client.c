@@ -4,6 +4,19 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+typedef enum TransactionType
+{
+    DEPOSIT,
+    WITHDRAW,
+    INVALID = -1
+} TransactionType;
+
+typedef struct Transaction
+{
+    enum TransactionType transactionType;
+    int amount;
+} Transaction;
+
 // client <IPv4 address> <port> <deposit/withdraw> <amount> <times>
 int main(int argc, char const *argv[])
 {
@@ -47,7 +60,12 @@ int main(int argc, char const *argv[])
     sa.sin_port = htons(port);
 
     // validate transaction
-    if (strcmp(strTransaction, "deposit") != 0 && strcmp(strTransaction, "withdraw") != 0)
+    TransactionType transactionType = INVALID;
+    if (strcmp(strTransaction, "deposit") == 0)
+        transactionType = DEPOSIT;
+    else if (strcmp(strTransaction, "withdraw") == 0)
+        transactionType = WITHDRAW;
+    else
     {
         printf("Invalid transaction: %s\n", strTransaction);
         return EXIT_FAILURE;
@@ -75,11 +93,9 @@ int main(int argc, char const *argv[])
     printf("time: %d\n", time);
 #endif
 
-    // send "<transaction> <amount>\n" to server for <time> times
-    // by connecting to the server <time> times
+    Transaction transaction = {transactionType, amount};
+
     int server;
-    char message[80];
-    int len = sprintf(message, "%s %d\n", strTransaction, amount);
     for (i = 0; i < time; i++)
     {
         if ((server = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -94,7 +110,7 @@ int main(int argc, char const *argv[])
         }
 
         // send transaction
-        if (send(server, message, len, 0) < 0)
+        if (send(server, &transaction, sizeof(transaction), 0) < 0)
         {
             perror("send()");
             exit(EXIT_FAILURE);
