@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 
     mySemid = sem_init(0x1234, 1);
     signal(SIGINT, sigintHandler);
+    signal(SIGHUP, sigintHandler);
     signal(SIGCHLD, sigchldHandler);
 
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
