@@ -50,6 +50,8 @@ lab6/examples/pipe
 lab6/examples/select
 lab6/examples/shm_server
 lab6/examples/shm_client
+lab6/server
+lab6/client
 
 # Debug files
 *.dSYM/
