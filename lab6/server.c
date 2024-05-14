@@ -13,7 +13,6 @@ int balance = 0;
 int serverSocket = -1;
 
 #define ADDRESS "127.0.0.1"
-#define PORT 8888
 #define MAX_CLIENTS 4096
 
 typedef enum TransactionType
@@ -88,10 +87,19 @@ void *connectionHandler(void *arg)
 
 int main(int argc, char *argv[])
 {
+    in_port_t port;
     struct sockaddr_in serverAddress, clientAddress;
     socklen_t clientAddressSize = sizeof(clientAddress);
     int option = 1;
     int clientSocket;
+
+    if (argc != 2)
+    {
+        printf("Usage: %s <port>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    port = atoi(argv[1]);
 
     mySemid = sem_init(0x1234, 1);
     signal(SIGINT, sigintHandler);
@@ -108,7 +116,7 @@ int main(int argc, char *argv[])
     memset(&serverAddress, 0, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = inet_addr(ADDRESS);
-    serverAddress.sin_port = htons(PORT);
+    serverAddress.sin_port = htons(port);
 
     setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 

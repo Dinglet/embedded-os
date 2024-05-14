@@ -12,7 +12,7 @@ On my virtual machine, the kernel parameter `net.ipv4.ip_local_port_range` is se
 
 ### Server
 
-The server has a socket listen at port 8888. Whenever it accepts a new connection request, it starts a new thread to receive data related to a series of transactions. The critical section involves updating and printing the account balance, and it is protected like the programs [`examples/doodle`](./examples/doodle.c) and [`examples/race`](./examples/race.c) do.
+The server establishes a socket connection on the port specified by the first argument. Whenever it accepts a new connection request, it starts a new thread to receive data related to a series of transactions. The critical section involves updating and printing the account balance, and it is protected like the programs [`examples/doodle`](./examples/doodle.c) and [`examples/race`](./examples/race.c) do.
 
 ## Appendix A - Examples
 
