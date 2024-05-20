@@ -79,6 +79,10 @@ void *connectionHandler(void *arg)
         perror("recv()");
         pthread_exit(NULL);
     }
+    else if (count == 0)
+    {
+        // printf("Client disconnected\n");
+    }
 
     close(clientSocket);
 
