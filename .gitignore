@@ -35,10 +35,16 @@
 *.i*86
 *.x86_64
 *.hex
+
+homework1/hw1
+
+homework2/hw2
+
 lab3-1/writer
+
 lab4/reader
 lab4/writer
-homework1/hw1
+
 lab5/lab5
 
 lab6/examples/makesem

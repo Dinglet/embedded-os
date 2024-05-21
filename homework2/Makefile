@@ -1,21 +1,12 @@
-obj-m := leds.o
-obj-m += segments.o
-
-KDIR = /lib/modules/$(shell uname -r)/build
-
 CC = $(CROSS_COMPILE)gcc
 
-all: hw2 driver
+all: hw2
 
-hw2: hw2.c Shop.c DeliveryApp.c OrderMenu.c Cart.c common.c
+hw2: hw2.o DeliveryManager.o DeliveryApp.o Shop.o DeliveryApp.o OrderMenu.o Cart.o common.o
 	$(CC) -o $@ $^ -lpthread
 
-driver: leds.c segments.c
-ifndef CROSS_COMPILE
-	make -C $(KDIR)  M=$(shell pwd) modules
-else
-	make -C $(KDIR)  M=$(shell pwd) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) modules
-endif
+%.o: %.c
+	$(CC) -c $(CFLAGS) $<
 
 clean:
 	rm -f hw2
