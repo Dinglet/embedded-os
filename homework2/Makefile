@@ -10,4 +10,4 @@ hw2: hw2.o DeliveryManager.o DeliveryApp.o Shop.o DeliveryApp.o OrderMenu.o Cart
 
 clean:
 	rm -f hw2
-	make -C $(KDIR)  M=$(shell pwd) clean
+	rm -f *.o
