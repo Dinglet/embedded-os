@@ -3,7 +3,7 @@ CC = $(CROSS_COMPILE)gcc
 all: hw2
 
 hw2: hw2.o DeliveryManager.o DeliveryApp.o Shop.o DeliveryApp.o OrderMenu.o Cart.o common.o
-	$(CC) -o $@ $^ -lpthread
+	$(CC) $(CFLAGS) -pthread -o $@ $^
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $<
