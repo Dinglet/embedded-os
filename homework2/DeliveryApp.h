@@ -8,7 +8,8 @@ struct DeliveryApp;
 typedef struct DeliveryApp DeliveryApp;
 typedef struct DeliveryApp *DeliveryAppPtr;
 
-DeliveryAppPtr createDeliveryApp(struct Shop *shops[], int nShops, int clientSocket);
+/// @brief Create a DeliveryApp object to handle a client shopping request.
+DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nShops);
 void destroyDeliveryApp(DeliveryAppPtr app);
 
 void runDeliveryApp(DeliveryAppPtr app);

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <fcntl.h>
@@ -39,12 +40,13 @@ void printExit(struct State *state);
 
 struct DeliveryApp
 {
+    int clientSocket;
     struct Shop **shops;
     int nShops;
     struct State *state;
 };
 
-DeliveryAppPtr createDeliveryApp(struct Shop *shops[], int nShops, int serverSocket)
+DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nShops)
 {
     DeliveryAppPtr app = (DeliveryAppPtr )malloc(sizeof(struct DeliveryApp));
     if (app == NULL)
@@ -52,6 +54,7 @@ DeliveryAppPtr createDeliveryApp(struct Shop *shops[], int nShops, int serverSoc
         return NULL;
     }
 
+    app->clientSocket = clientSocket;
     app->shops = shops;
     app->nShops = nShops;
     app->state = createStateMainMenu(app);
@@ -60,6 +63,7 @@ DeliveryAppPtr createDeliveryApp(struct Shop *shops[], int nShops, int serverSoc
 
 void destroyDeliveryApp(DeliveryAppPtr app)
 {
+    close(app->clientSocket);
     destroyState(app->state);
     free(app);
 }
