@@ -53,6 +53,10 @@ lab6/examples/shm_client
 lab6/server
 lab6/client
 
+lab7/examples/sig_catch
+lab7/examples/sig_count
+lab7/examples/timer
+
 # Debug files
 *.dSYM/
 *.su
