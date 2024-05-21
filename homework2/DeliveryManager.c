@@ -60,6 +60,7 @@ void *deliverAppHandler(void *arg)
 {
     DeliveryAppPtr app = *(DeliveryAppPtr *)arg;
     runDeliveryApp(app);
+    close(getSocket(app));
     destroyDeliveryApp(app);
     pthread_exit(NULL);
 }

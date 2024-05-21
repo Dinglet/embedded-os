@@ -63,7 +63,6 @@ DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nSh
 
 void destroyDeliveryApp(DeliveryAppPtr app)
 {
-    close(app->clientSocket);
     destroyState(app->state);
     free(app);
 }
@@ -75,6 +74,11 @@ void runDeliveryApp(DeliveryAppPtr app)
     {
         printMenu(app);
     }
+}
+
+int getSocket(DeliveryAppPtr app)
+{
+    return app->clientSocket;
 }
 
 int isRunning(DeliveryAppPtr app)

@@ -13,6 +13,7 @@ DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nSh
 void destroyDeliveryApp(DeliveryAppPtr app);
 
 void runDeliveryApp(DeliveryAppPtr app);
+int getSocket(DeliveryAppPtr app);
 
 int isRunning(DeliveryAppPtr app);
 void printMenu(DeliveryAppPtr app);
