@@ -16,18 +16,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 struct State
 {
-    struct DeliveryApp *app;
+    DeliveryAppPtr app;
     void (*printMenu)(struct State *state);
     int bRunning;
 };
 
-struct State *createStateMainMenu(struct DeliveryApp *app);
-struct State *createStateShopList(struct DeliveryApp *app);
-struct State *createStateShopMenu(struct DeliveryApp *app);
-struct State *createStateExit(struct DeliveryApp *app);
+struct State *createStateMainMenu(DeliveryAppPtr app);
+struct State *createStateShopList(DeliveryAppPtr app);
+struct State *createStateShopMenu(DeliveryAppPtr app);
+struct State *createStateExit(DeliveryAppPtr app);
 void destroyState(struct State *state);
 
-// void printMenu(struct DeliveryApp *app);
+// void printMenu(DeliveryAppPtr app);
 void printMainMenu(struct State *state);
 void printShopList(struct State *state);
 void printShopMenu(struct State *state);
@@ -44,9 +44,9 @@ struct DeliveryApp
     struct State *state;
 };
 
-struct DeliveryApp *createDeliveryApp(struct Shop *shops[], int nShops)
+DeliveryAppPtr createDeliveryApp(struct Shop *shops[], int nShops, int serverSocket)
 {
-    struct DeliveryApp *app = (struct DeliveryApp *)malloc(sizeof(struct DeliveryApp));
+    DeliveryAppPtr app = (DeliveryAppPtr )malloc(sizeof(struct DeliveryApp));
     if (app == NULL)
     {
         return NULL;
@@ -58,13 +58,13 @@ struct DeliveryApp *createDeliveryApp(struct Shop *shops[], int nShops)
     return app;
 }
 
-void destroyDeliveryApp(struct DeliveryApp *app)
+void destroyDeliveryApp(DeliveryAppPtr app)
 {
     destroyState(app->state);
     free(app);
 }
 
-void runDeliveryApp(struct DeliveryApp *app)
+void runDeliveryApp(DeliveryAppPtr app)
 {
     printMenu(app);
     while (isRunning(app))
@@ -73,17 +73,17 @@ void runDeliveryApp(struct DeliveryApp *app)
     }
 }
 
-int isRunning(struct DeliveryApp *app)
+int isRunning(DeliveryAppPtr app)
 {
     return app->state->bRunning;
 }
 
-void printMenu(struct DeliveryApp *app)
+void printMenu(DeliveryAppPtr app)
 {
     app->state->printMenu(app->state);
 }
 
-void changeState(struct DeliveryApp *app, struct State *state)
+void changeState(DeliveryAppPtr app, struct State *state)
 {
     destroyState(app->state);
     app->state = state;
@@ -161,7 +161,7 @@ void *threadShowNumber(void *arg)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-struct State *createStateMainMenu(struct DeliveryApp *app)
+struct State *createStateMainMenu(DeliveryAppPtr app)
 {
     struct State *state = (struct State *)malloc(sizeof(struct State));
     if (state == NULL)
@@ -175,7 +175,7 @@ struct State *createStateMainMenu(struct DeliveryApp *app)
     return state;
 }
 
-struct State *createStateShopList(struct DeliveryApp *app)
+struct State *createStateShopList(DeliveryAppPtr app)
 {
     struct State *state = (struct State *)malloc(sizeof(struct State));
     if (state == NULL)
@@ -189,7 +189,7 @@ struct State *createStateShopList(struct DeliveryApp *app)
     return state;
 }
 
-struct State *createStateShopMenu(struct DeliveryApp *app)
+struct State *createStateShopMenu(DeliveryAppPtr app)
 {
     struct State *state = (struct State *)malloc(sizeof(struct State));
     if (state == NULL)
@@ -203,7 +203,7 @@ struct State *createStateShopMenu(struct DeliveryApp *app)
     return state;
 }
 
-struct State *createStateExit(struct DeliveryApp *app)
+struct State *createStateExit(DeliveryAppPtr app)
 {
     struct State *state = (struct State *)malloc(sizeof(struct State));
     if (state == NULL)
@@ -224,7 +224,7 @@ void destroyState(struct State *state)
 
 void printMainMenu(struct State *state)
 {
-    struct DeliveryApp *app = state->app;
+    DeliveryAppPtr app = state->app;
     int input;
 
     printf("1. shop list\n");
@@ -254,7 +254,7 @@ void printMainMenu(struct State *state)
 
 void printShopList(struct State *state)
 {
-    struct DeliveryApp *app = state->app;
+    DeliveryAppPtr app = state->app;
     int input;
 
     if (app->nShops <= 0)
@@ -276,7 +276,7 @@ void printShopList(struct State *state)
 
 void printShopMenu(struct State *state)
 {
-    struct DeliveryApp *app = state->app;
+    DeliveryAppPtr app = state->app;
     int input;
     if (app->nShops <= 0)
     {
@@ -323,7 +323,7 @@ void printShopMenu(struct State *state)
 
 void printOrderMenu(struct State *state)
 {
-    struct DeliveryApp *app = state->app;
+    DeliveryAppPtr app = state->app;
     changeState(app, createStateMainMenu(app));
     return;
 }

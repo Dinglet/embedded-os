@@ -5,15 +5,17 @@
 struct State;
 
 struct DeliveryApp;
+typedef struct DeliveryApp DeliveryApp;
+typedef struct DeliveryApp *DeliveryAppPtr;
 
-struct DeliveryApp *createDeliveryApp(struct Shop *shops[], int nShops);
-void destroyDeliveryApp(struct DeliveryApp *app);
+DeliveryAppPtr createDeliveryApp(struct Shop *shops[], int nShops, int clientSocket);
+void destroyDeliveryApp(DeliveryAppPtr app);
 
-void runDeliveryApp(struct DeliveryApp *app);
+void runDeliveryApp(DeliveryAppPtr app);
 
-int isRunning(struct DeliveryApp *app);
-void printMenu(struct DeliveryApp *app);
-void changeState(struct DeliveryApp *app, struct State *state);
+int isRunning(DeliveryAppPtr app);
+void printMenu(DeliveryAppPtr app);
+void changeState(DeliveryAppPtr app, struct State *state);
 
 void showNumber(int n);
 void countDown(int n);
