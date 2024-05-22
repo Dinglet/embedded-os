@@ -366,7 +366,7 @@ void printShopMenu(struct State *state)
 
     OrderMenuPtr orderMenu = createOrderMenu(app->shops[input-1]);
     int ret = showOrderMenu(orderMenu);
-    int n = getTotalPrice(orderMenu);
+    int n = getTotalPrice(orderMenu->cart);
     if (ret == STATUS_CONFIRM && n > 0)
     {
         // asynchronously show total price
