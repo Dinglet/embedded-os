@@ -45,6 +45,7 @@ struct DeliveryApp
     struct Shop **shops;
     int nShops;
     struct State *state;
+    int bRunning;
 };
 
 DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nShops)
@@ -71,10 +72,21 @@ void destroyDeliveryApp(DeliveryAppPtr app)
 void runDeliveryApp(DeliveryAppPtr app)
 {
     char buffer[BUFFER_SIZE] = {0};
-    int count = 0;
+    int count = 0, i = 0;
 
-    while ((count = recv(app->clientSocket, buffer, BUFFER_SIZE, 0)) > 0)
+    app->bRunning = 1;
+
+    while (app->bRunning && (count = recv(app->clientSocket, buffer, BUFFER_SIZE, 0)) > 0)
     {
+        for (i = 0; i < count; i++)
+        {
+            if (buffer[i] == '\n')
+            {
+                buffer[i] = '\0';
+                break;
+            }
+        }
+
         printf("Received: %s\n", buffer);
         CommandPtr command = createCommand(buffer);
         if (command == NULL)
@@ -113,7 +125,8 @@ void runDeliveryApp(DeliveryAppPtr app)
 
             break;
         case kCancel:
-
+            printf("Client cancel the order\n");
+            app->bRunning = 0;
             break;
         default:
             break;
