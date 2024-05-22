@@ -74,15 +74,3 @@ int addItemToOrder(OrderMenuPtr orderMenu, int menuItemIndex, int quantity)
     orderMenu->cart->quantities[menuItemIndex] += quantity;
     return 0;
 }
-
-int getTotalPrice(OrderMenuPtr orderMenu)
-{
-    CartPtr cart = orderMenu->cart;
-    int totalPrice = 0;
-    for (int i = 0; i < cart->nItems; i++)
-    {
-        totalPrice += cart->quantities[i] * cart->items[i]->price;
-    }
-
-    return totalPrice;
-}

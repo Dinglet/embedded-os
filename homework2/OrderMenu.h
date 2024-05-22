@@ -21,4 +21,3 @@ void destroyOrderMenu(OrderMenuPtr orderMenu);
 
 int showOrderMenu(OrderMenuPtr orderMenu);
 int addItemToOrder(OrderMenuPtr orderMenu, int menuItemIndex, int quantity);
-int getTotalPrice(OrderMenuPtr orderMenu);
