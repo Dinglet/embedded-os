@@ -16,3 +16,6 @@ struct Cart
     int *quantities;
     int nItems;
 };
+
+void addItem(CartPtr cart, char *itemName, int quantity);
+int getTotalPrice(CartPtr cart);

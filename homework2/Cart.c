@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "Cart.h"
 
 CartPtr createCart(ShopPtr shop)
@@ -32,4 +34,29 @@ void destroyCart(CartPtr cart)
     free(cart->quantities);
 
     free(cart);
+}
+
+void addItem(CartPtr cart, char *itemName, int quantity)
+{
+    MenuItemPtr current = cart->shop->menu;
+    for (int i = 0; i < cart->nItems; i++)
+    {
+        if (strcmp(current->name, itemName) == 0)
+        {
+            cart->quantities[i] += quantity;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+int getTotalPrice(CartPtr cart)
+{
+    int totalPrice = 0;
+    for (int i = 0; i < cart->nItems; i++)
+    {
+        totalPrice += cart->quantities[i] * cart->items[i]->price;
+    }
+
+    return totalPrice;
 }
