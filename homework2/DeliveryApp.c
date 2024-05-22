@@ -8,6 +8,7 @@
 #include "DeliveryApp.h"
 #include "OrderMenu.h"
 #include "common.h"
+#include "Command.h"
 
 #define DEVICE_DISTANCE "/dev/leds"
 #define DEVICE_PRICE "/dev/segments"
@@ -69,10 +70,56 @@ void destroyDeliveryApp(DeliveryAppPtr app)
 
 void runDeliveryApp(DeliveryAppPtr app)
 {
-    printMenu(app);
-    while (isRunning(app))
+    char buffer[BUFFER_SIZE] = {0};
+    int count = 0;
+
+    while ((count = recv(app->clientSocket, buffer, BUFFER_SIZE, 0)) > 0)
     {
-        printMenu(app);
+        printf("Received: %s\n", buffer);
+        CommandPtr command = createCommand(buffer);
+        if (command == NULL)
+        {
+            continue;
+        }
+
+        switch (command->type)
+        {
+        case kShopList:
+            // print shop list
+            buffer[0] = '\0';
+            count = 0;
+
+            for (int i = 0; i < app->nShops; i++)
+            {
+                ShopPtr shop = app->shops[i];
+                MenuItemPtr menuItem = shop->menu;
+
+                count += sprintf(buffer + count, "%s:%dkm\n", shop->name, shop->distance);
+                count += sprintf(buffer + count, "- ");
+                while (menuItem)
+                {
+                    count += sprintf(buffer + count, "%s:$%d|", menuItem->name, menuItem->price);
+                    menuItem = menuItem->next;
+                }
+                buffer[count-1] = '\n';
+            }
+
+            send(app->clientSocket, buffer, BUFFER_SIZE, 0);
+            break;
+        case kOrder:
+
+            break;
+        case kConfirm:
+
+            break;
+        case kCancel:
+
+            break;
+        default:
+            break;
+        }
+
+        destroyCommand(command);
     }
 }
 
