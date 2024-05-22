@@ -42,8 +42,8 @@ int main(int argc, char const *argv[])
     addMenuItem(shops[1], "tea", 40);
     addMenuItem(shops[1], "boba", 70);
     shops[2] = createShop("Diner", 8);
-    addMenuItem(shops[2], "fried rice", 120);
-    addMenuItem(shops[2], "egg-drop soup", 50);
+    addMenuItem(shops[2], "fried-rice", 120);
+    addMenuItem(shops[2], "Egg-drop-soup", 50);
 
     // signal(SIGINT, sigintHandler);
     signal(SIGCHLD, sigchldHandler);
