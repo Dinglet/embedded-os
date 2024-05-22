@@ -42,13 +42,14 @@ void runDeliveryManager(DeliveryManagerPtr manager)
     while ((clientSocket = accept(manager->socket, NULL, NULL)) >= 0)
     {
         pthread_t thread;
-        pthread_attr_t attr;
+        // pthread_attr_t attr;
 
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+        // pthread_attr_init(&attr);
+        // pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
         DeliveryAppPtr app = createDeliveryApp(clientSocket, manager->shops, manager->nShops);
         pthread_create(&thread, NULL, deliverAppHandler, &app);
+        pthread_join(thread, NULL);
     }
     if (clientSocket < 0)
     {
