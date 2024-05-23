@@ -43,6 +43,11 @@ DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nSh
 
 void destroyDeliveryApp(DeliveryAppPtr app)
 {
+    if (app == NULL)
+    {
+        return;
+    }
+
     destroyCart(app->cart);
     free(app);
 }

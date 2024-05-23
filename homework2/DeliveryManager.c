@@ -32,6 +32,11 @@ DeliveryManagerPtr createDeliveryManager(int socket, ShopPtr shops[], int nShops
 
 void destroyDeliveryManager(DeliveryManagerPtr manager)
 {
+    if (manager == NULL)
+    {
+        return;
+    }
+
     free(manager);
 }
 
