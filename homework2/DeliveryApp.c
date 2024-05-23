@@ -49,25 +49,26 @@ void destroyDeliveryApp(DeliveryAppPtr app)
 
 void runDeliveryApp(DeliveryAppPtr app)
 {
-    char buffer[BUFFER_SIZE] = {0};
+    char readBuffer[BUFFER_SIZE] = {0};
+    char writeBuffer[BUFFER_SIZE] = {0};
     char *p = NULL;
     int count = 0;
 
     app->bRunning = 1;
 
-    while (app->bRunning && (count = recv(app->clientSocket, buffer, BUFFER_SIZE, 0)) > 0)
+    while (app->bRunning && (count = recv(app->clientSocket, readBuffer, BUFFER_SIZE, 0)) > 0)
     {
         for (int i = 0; i < count; i++)
         {
-            if (buffer[i] == '\n')
+            if (readBuffer[i] == '\n')
             {
-                buffer[i] = '\0';
+                readBuffer[i] = '\0';
                 break;
             }
         }
 
-        printf("(%d) Received: %s\n", app->id, buffer);
-        CommandPtr command = createCommand(buffer);
+        printf("(%d) Received: %s\n", app->id, readBuffer);
+        CommandPtr command = createCommand(readBuffer);
         if (command == NULL)
         {
             continue;
@@ -77,7 +78,7 @@ void runDeliveryApp(DeliveryAppPtr app)
         {
         case kShopList:
             // print shop list
-            buffer[0] = '\0';
+            writeBuffer[0] = '\0';
             count = 0;
 
             for (int i = 0; i < app->nShops; i++)
@@ -85,18 +86,18 @@ void runDeliveryApp(DeliveryAppPtr app)
                 ShopPtr shop = app->shops[i];
                 MenuItemPtr menuItem = shop->menu;
 
-                count += sprintf(buffer + count, "%s:%dkm\n", shop->name, shop->distance);
-                count += sprintf(buffer + count, "- ");
+                count += sprintf(writeBuffer + count, "%s:%dkm\n", shop->name, shop->distance);
+                count += sprintf(writeBuffer + count, "- ");
                 while (menuItem)
                 {
-                    count += sprintf(buffer + count, "%s:$%d|", menuItem->name, menuItem->price);
+                    count += sprintf(writeBuffer + count, "%s:$%d|", menuItem->name, menuItem->price);
                     menuItem = menuItem->next;
                 }
-                buffer[count-1] = '\n';
+                writeBuffer[count-1] = '\n';
             }
 
-            send(app->clientSocket, buffer, BUFFER_SIZE, 0);
-            printf("(%d) Sent: %s\n", app->id, buffer);
+            send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
+            printf("(%d) Sent: %s\n", app->id, writeBuffer);
             break;
         case kOrder:
             // parse order "<meal> <quantity>"
@@ -135,45 +136,47 @@ void runDeliveryApp(DeliveryAppPtr app)
             char meal[256] = {0};
             int quantity = 0;
 
-            memset(buffer, 0, BUFFER_SIZE);
-            count = 0;
-
             sscanf(p, "%s %d", meal, &quantity);
             addItem(app->cart, meal, quantity);
 
+            memset(writeBuffer, 0, BUFFER_SIZE);
             // meals in the cart
             MenuItemPtr current = app->cart->shop->menu;
             for (int i = 0; i < app->cart->nItems; i++)
             {
                 if (app->cart->quantities[i] > 0)
                 {
-                    count += sprintf(buffer + count, "%s %d|", current->name, app->cart->quantities[i]);
+                    count += sprintf(writeBuffer + count, "%s %d|", current->name, app->cart->quantities[i]);
                 }
                 current = current->next;
             }
             if (count > 1)
-                buffer[count-1] = '\n';
+                writeBuffer[count-1] = '\n';
 
-            send(app->clientSocket, buffer, BUFFER_SIZE, 0);
-            printf("(%d) Sent: %s\n", app->id, buffer);
+            send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
+            printf("(%d) Sent: %s\n", app->id, writeBuffer);
             break;
         case kConfirm:
             if (app->cart == NULL)
             {
-                snprintf(buffer, BUFFER_SIZE, "Please order some meals\n");
-                send(app->clientSocket, buffer, BUFFER_SIZE, 0);
-                printf("(%d) Sent: %s\n", app->id, buffer);
+                memset(writeBuffer, 0, BUFFER_SIZE);
+                snprintf(writeBuffer, BUFFER_SIZE, "Please order some meals\n");
+                send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
+                printf("(%d) Sent: %s\n", app->id, writeBuffer);
                 break;
             }
-            snprintf(buffer, BUFFER_SIZE, "Please wait a few minutes...\n");
-            send(app->clientSocket, buffer, BUFFER_SIZE, 0);
-            printf("(%d) Sent: %s\n", app->id, buffer);
+            memset(writeBuffer, 0, BUFFER_SIZE);
+            snprintf(writeBuffer, BUFFER_SIZE, "Please wait a few minutes...\n");
+            send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
+            printf("(%d) Sent: %s\n", app->id, writeBuffer);
 
             sleep(app->cart->shop->distance);
 
-            snprintf(buffer, BUFFER_SIZE, "Delivery has arrived and you need to pay %d$\n", getTotalPrice(app->cart));
-            send(app->clientSocket, buffer, BUFFER_SIZE, 0);
-            printf("(%d) Sent: %s\n", app->id, buffer);
+            memset(writeBuffer, 0, BUFFER_SIZE);
+            snprintf(writeBuffer, BUFFER_SIZE, "Delivery has arrived and you need to pay %d$\n", getTotalPrice(app->cart));
+            send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
+            printf("(%d) Sent: %s\n", app->id, writeBuffer);
+
             app->bRunning = 0;
             break;
         case kCancel:
