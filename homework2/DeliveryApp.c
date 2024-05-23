@@ -83,7 +83,7 @@ void runDeliveryApp(DeliveryAppPtr app)
         {
         case kShopList:
             // print shop list
-            writeBuffer[0] = '\0';
+            memset(writeBuffer, 0, BUFFER_SIZE);
             count = 0;
 
             for (int i = 0; i < app->nShops; i++)
@@ -145,6 +145,7 @@ void runDeliveryApp(DeliveryAppPtr app)
             addItem(app->cart, meal, quantity);
 
             memset(writeBuffer, 0, BUFFER_SIZE);
+            count = 0;
             // meals in the cart
             MenuItemPtr current = app->cart->shop->menu;
             for (int i = 0; i < app->cart->nItems; i++)
