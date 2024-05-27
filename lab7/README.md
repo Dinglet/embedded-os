@@ -1,4 +1,8 @@
-# Lab 7
+# Lab 7: Signal & Timer
+
+In lab 7, students learn the usage of some signal and timer functions in C, and then apply knowledge to implement a number guessing game.
+
+## Number Guessing Game
 
 ## Appendix A - Examples
 
@@ -28,3 +32,4 @@ SIGUSR1 was raised <N> times
 where `3829` is the process ID of `sig_count`, and `<N>` will be replace by the number of time the command `kill -USR1 3829` is execute whin 10 seconds after `sig_count` is run.
 
 ### A.2 Timer
+
