@@ -32,14 +32,14 @@ struct Game
     int bRunning;
 };
 
-GamePtr pGame = NULL;
-GamePtr createGame(int key, int guess);
-void executeGame(GamePtr pGame);
-void destroyGame(GamePtr pGame);
+static GamePtr pGame = NULL;
+static GamePtr createGame(int key, int guess);
+static void executeGame(GamePtr pGame);
+static void destroyGame(GamePtr pGame);
 
-void sigintHandler(int signum);
-void sigchldHandler(int signum);
-void guessHandler(int signo, siginfo_t *info, void *context);
+static void terminationHandler(int signum);
+static void sigchldHandler(int signum);
+static void guessHandler(int signo, siginfo_t *info, void *context);
 
 // Usage: game <key> <guess>
 int main(int argc, char const *argv[])
@@ -54,8 +54,8 @@ int main(int argc, char const *argv[])
     key = strtol(argv[1], NULL, 0); // not only for base 10
     guess = strtol(argv[2], NULL, 0);
 
-    signal(SIGINT, sigintHandler);
-    signal(SIGHUP, sigintHandler);
+    signal(SIGINT, terminationHandler);
+    signal(SIGHUP, terminationHandler);
     signal(SIGCHLD, sigchldHandler);
 
     pGame = createGame(key, guess);
@@ -124,8 +124,6 @@ void executeGame(GamePtr pGame)
 
 void destroyGame(GamePtr pGame)
 {
-    if (pGame == NULL)
-        return;
     if (pGame->pSharedData != NULL)
     {
         shmdt(pGame->pSharedData);
@@ -134,7 +132,7 @@ void destroyGame(GamePtr pGame)
     free(pGame);
 }
 
-void sigintHandler(int signum)
+void terminationHandler(int signum)
 {
     pGame->bRunning = 0;
 }
