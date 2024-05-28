@@ -126,7 +126,12 @@ void executeGuesser(GuesserPtr pGuess)
 
     pGuess->bRunning = 1;
     /* Start a virtual timer */
-    setitimer(ITIMER_REAL, &timer, NULL);
+    if (setitimer(ITIMER_REAL, &timer, NULL) < 0)
+    {
+        perror("setitimer");
+        exit(EXIT_FAILURE);
+    }
+
     do
     {
         pause();
