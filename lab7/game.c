@@ -145,7 +145,6 @@ void sigchldHandler(int signum)
 void guessHandler(int signo, siginfo_t *info, void *context)
 {
     int guess = pGame->pSharedData->guess;
-    printf("[game] Guess: %d\n", guess);
 
     if (guess == pGame->target)
     {
@@ -160,6 +159,8 @@ void guessHandler(int signo, siginfo_t *info, void *context)
     {
         strncpy(pGame->pSharedData->result, "smaller", sizeof(pGame->pSharedData->result));
     }
+
+    printf("[game] Guess: %d, %s\n", guess, pGame->pSharedData->result);
 
     kill(info->si_pid, SIGUSR1);
 }
