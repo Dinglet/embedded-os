@@ -4,6 +4,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/shm.h>
@@ -25,6 +26,7 @@ typedef struct Guesser *GuesserPtr;
 struct Guesser
 {
     int gamePid;
+    int lower_bound;
     int upper_bound;
 
     int shmid;
@@ -73,6 +75,7 @@ GuesserPtr createGuesser(int key, int upper_bound, int pid)
         return NULL;
     }
 
+    pGuess->lower_bound = 1;
     pGuess->upper_bound = upper_bound;
     pGuess->gamePid = pid;
 
@@ -98,21 +101,18 @@ GuesserPtr createGuesser(int key, int upper_bound, int pid)
     sigaction(SIGUSR1, &sa, NULL);
 
     return pGuess;
-
 }
 
 void executeGuesser(GuesserPtr pGuess)
 {
-    if (pGuess == NULL)
+    pGuess->bRunning = 1;
+    do
     {
-        return;
-    }
-
-    // single guess
-    pGuess->pSharedData->guess = pGuess->upper_bound / 2;
-    printf("[game] Guess: %d\n", pGuess->pSharedData->guess);
-    kill(pGuess->gamePid, SIGUSR1);
-    pause();
+        pGuess->pSharedData->guess = (pGuess->lower_bound + pGuess->upper_bound) / 2;
+        printf("[game] Guess: %d\n", pGuess->pSharedData->guess);
+        kill(pGuess->gamePid, SIGUSR1);
+        pause();
+    } while (pGuess->bRunning);
 }
 
 void destroyGuesser(GuesserPtr pGuess)
@@ -134,5 +134,21 @@ void resultHandler(int signo, siginfo_t *info, void *context)
         return;
     }
 
-    printf("Result: %s\n", pGuess->pSharedData->result);
+    if (strcmp(pGuess->pSharedData->result, "bingo") == 0)
+    {
+        pGuess->bRunning = 0;
+    }
+    else if (strcmp(pGuess->pSharedData->result, "bigger") == 0)
+    {
+        pGuess->lower_bound = pGuess->pSharedData->guess + 1;
+    }
+    else if (strcmp(pGuess->pSharedData->result, "smaller") == 0)
+    {
+        pGuess->upper_bound = pGuess->pSharedData->guess - 1;
+    }
+    else
+    {
+        printf("Invalid result: %s\n", pGuess->pSharedData->result);
+        exit(EXIT_FAILURE);
+    }
 }
