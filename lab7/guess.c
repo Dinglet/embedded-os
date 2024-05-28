@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/shm.h>
+#include <sys/time.h>
 
 struct Data;
 typedef struct Data Data;
@@ -39,6 +40,7 @@ GuesserPtr createGuesser(int key, int upper_bound, int pid);
 void executeGuesser(GuesserPtr pGuess);
 void destroyGuesser(GuesserPtr pGuess);
 
+static void timerHandler(int signum);
 void resultHandler(int signo, siginfo_t *info, void *context);
 
 // guess <key> <upper_bound> <pid>
@@ -105,12 +107,28 @@ GuesserPtr createGuesser(int key, int upper_bound, int pid)
 
 void executeGuesser(GuesserPtr pGuess)
 {
+    struct sigaction sa;
+    struct itimerval timer;
+
+    /* Install timer_handler as the signal handler for SIGALRM */
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = &timerHandler;
+    sigaction(SIGALRM, &sa, NULL);
+
+    /* Configure the timer to expire after 1 second */
+    timer.it_value.tv_sec = 1;
+    timer.it_value.tv_usec = 0;
+
+    /* Reset the timer back to 1 second after expired */
+    timer.it_interval.tv_sec = 1;
+    timer.it_interval.tv_usec = 0;
+
+
     pGuess->bRunning = 1;
+    /* Start a virtual timer */
+    setitimer(ITIMER_REAL, &timer, NULL);
     do
     {
-        pGuess->pSharedData->guess = (pGuess->lower_bound + pGuess->upper_bound) / 2;
-        printf("[game] Guess: %d\n", pGuess->pSharedData->guess);
-        kill(pGuess->gamePid, SIGUSR1);
         pause();
     } while (pGuess->bRunning);
 }
@@ -124,6 +142,14 @@ void destroyGuesser(GuesserPtr pGuess)
 
     shmdt(pGuess->pSharedData);
     free(pGuess);
+}
+
+// make a guess
+void timerHandler(int signum)
+{
+    pGuess->pSharedData->guess = (pGuess->lower_bound + pGuess->upper_bound) / 2;
+    printf("[game] Guess: %d\n", pGuess->pSharedData->guess);
+    kill(pGuess->gamePid, SIGUSR1);
 }
 
 void resultHandler(int signo, siginfo_t *info, void *context)
