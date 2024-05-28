@@ -35,13 +35,13 @@ struct Guesser
     int bRunning;
 };
 
-GuesserPtr pGuess = NULL;
-GuesserPtr createGuesser(int key, int upper_bound, int pid);
-void executeGuesser(GuesserPtr pGuess);
-void destroyGuesser(GuesserPtr pGuess);
+static GuesserPtr pGuess = NULL;
+static GuesserPtr createGuesser(int key, int upper_bound, int pid);
+static void executeGuesser(GuesserPtr pGuess);
+static void destroyGuesser(GuesserPtr pGuess);
 
 static void timerHandler(int signum);
-void resultHandler(int signo, siginfo_t *info, void *context);
+static void resultHandler(int signo, siginfo_t *info, void *context);
 
 // guess <key> <upper_bound> <pid>
 int main(int argc, char **argv)
