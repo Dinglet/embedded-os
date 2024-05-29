@@ -28,6 +28,25 @@ struct Data
     - notifies `game` of the guess through the signal `SIGUSR1`, and
     - handles the results when receiving `SIGUSR1`.
 
+```mermaid
+sequenceDiagram
+    participant bash1 as bash
+    participant bash2 as bash
+
+    create participant game
+    bash1 ->> game : ./game <key> <guess>
+
+    create participant guess
+    bash2 ->> guess : ./guess <key> <upper_bound> <pid>
+
+    destroy guess
+    guess -->> bash2 : exit
+
+    bash1 -->> game : ctrl-c
+    destroy game
+    game -->> bash1 : exit
+```
+
 ## Appendix A - Examples
 
 ### A.1 Signal
