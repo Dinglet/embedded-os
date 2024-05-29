@@ -85,3 +85,7 @@ There are 3 types of interval timers provided by the `setitimer` function in Lin
 The program [`timer`](./examples/timer.c) is an example of using the virtual timer.
 
 The program [`timer_diff`](./examples/timer_diff.c) shows that 3 interval timers have different expiration times counted within an I/O task.
+
+### A.3 Process Reaper
+
+The process reaper has already been used in lab 5. The `SIGCLD` signal indicates that a child stopped or terminated. We use `ps aux | grep defunct | grep -v grep` to check if any zombie process exists. However, it is unsure why there is not a zombie process remaining even if I do not set up the process reaper.
