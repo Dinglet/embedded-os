@@ -76,3 +76,12 @@ where `3829` is the process ID of `sig_count`, and `<N>` will be replace by the 
 
 ### A.2 Timer
 
+There are 3 types of interval timers provided by the `setitimer` function in Linux. Each timer is specified via the *which* argument. Those timers are:
+
+- a real-time timer (specified by `ITIMER_REAL`),
+- a virtual timer (specified by `ITIMER_VIRTUAL`), and
+- a profiling timer (specified by `ITIMER_PROF`).
+
+The program [`timer`](./examples/timer.c) is an example of using the virtual timer.
+
+The program [`timer_diff`](./examples/timer_diff.c) shows that 3 interval timers have different expiration times counted within an I/O task.
