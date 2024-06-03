@@ -29,6 +29,9 @@ struct Data
     - handles the results when receiving `SIGUSR1`.
 
 ```mermaid
+---
+title: Sequence Diagram of Interaction between `game` and `guess`
+---
 sequenceDiagram
     participant bash1 as bash
     participant bash2 as bash
@@ -39,10 +42,34 @@ sequenceDiagram
     create participant guess
     bash2 ->> guess : ./guess <key> <upper_bound> <pid>
 
+    loop guess.bRunning == 1
+        guess ->> guess : pause()
+
+        break Timer expiration
+            guess ->> guess : SIGALRM
+            activate guess
+            note over guess : timerHandler()
+
+            guess -) game : SIGUSR1
+            deactivate guess
+            activate game
+            note over game : guessHandler()
+
+            game -) guess : SIGUSR1
+            deactivate game
+            activate guess
+            note over guess : resultHandler()
+            opt bingo
+                guess ->> guess : bRunning = 0
+            end
+            deactivate guess
+        end
+    end
+
     destroy guess
     guess -->> bash2 : exit
 
-    bash1 -->> game : ctrl-c
+    bash1 -) game : ctrl-c
     destroy game
     game -->> bash1 : exit
 ```
