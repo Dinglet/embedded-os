@@ -1,8 +1,8 @@
-# Homework 2: Delivery Platform (online version)
+# Homework 3: Delivery Platform (multi-user online version)
 
 ## Introduction
 
-In this homework, we will continue with the contents of [homework 1](../homework1/) and modify the original standalone delivery system to a connectable version using a socket server.
+In this homework, we will continue with the contents of [homework 2](../homework2/) and modify the original single-user connectable version to a multi-user one.
 
 ## Specification
 
@@ -97,7 +97,7 @@ In this homework, we will continue with the contents of [homework 1](../homework
 - the server
 
     ```bash
-    ./hw2 <port>
+    ./hw3 <port>
     ```
 
 - `netcat` as the client
