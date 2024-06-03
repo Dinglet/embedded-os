@@ -14,11 +14,3 @@ void destroyDeliveryApp(DeliveryAppPtr app);
 
 void runDeliveryApp(DeliveryAppPtr app);
 int getSocket(DeliveryAppPtr app);
-
-int isRunning(DeliveryAppPtr app);
-void printMenu(DeliveryAppPtr app);
-void changeState(DeliveryAppPtr app, struct State *state);
-
-void showNumber(int n);
-void countDown(int n);
-void *threadShowNumber(void *arg);
