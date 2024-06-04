@@ -32,11 +32,6 @@ ShopPtr createShop(char *name, int distance)
 
 void destroyShop(ShopPtr shop)
 {
-    if (shop == NULL)
-    {
-        return;
-    }
-
     free(shop->name);
     // free all menu items
     MenuItemPtr current = shop->menu;

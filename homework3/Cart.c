@@ -30,11 +30,6 @@ CartPtr createCart(ShopPtr shop)
 
 void destroyCart(CartPtr cart)
 {
-    if (cart == NULL)
-    {
-        return;
-    }
-
     free(cart->items);
     free(cart->quantities);
 
