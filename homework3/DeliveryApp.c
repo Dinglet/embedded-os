@@ -6,12 +6,15 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <fcntl.h>
+#include <semaphore.h>
 
 #include "DeliveryApp.h"
 #include "Shop.h"
 #include "Cart.h"
 #include "common.h"
 #include "Command.h"
+
+#include "TaskManager.h"
 
 static int countApp = 0;
 struct DeliveryApp
@@ -22,9 +25,10 @@ struct DeliveryApp
     int bRunning;
     CartPtr cart;
     int id;
+    TaskManagerPtr taskManager;
 };
 
-DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nShops)
+DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nShops, TaskManagerPtr taskManager)
 {
     DeliveryAppPtr app = (DeliveryAppPtr )malloc(sizeof(struct DeliveryApp));
     if (app == NULL)
@@ -38,6 +42,9 @@ DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nSh
     app->bRunning = 0;
     app->cart = NULL;
     app->id = countApp++;
+
+    app->taskManager = taskManager;
+
     return app;
 }
 
@@ -171,12 +178,26 @@ void runDeliveryApp(DeliveryAppPtr app)
                 printf("(%d) Sent: %s\n", app->id, writeBuffer);
                 break;
             }
+
+            printf("(%d) Estimated waiting time: %f\n", app->id, taskManagerEstimateWaitingTime(app->taskManager, app->cart->shop->distance, NULL));
+            // if (taskManagerEstimateWaitingTime(app->taskManager, app->cart->shop->distance, NULL) >= 30)
+            // {
+            //     memset(writeBuffer, 0, BUFFER_SIZE);
+            //     snprintf(writeBuffer, BUFFER_SIZE, "Your delivery will take a long time, do you want to wait?\n");
+            //     send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
+            //     printf("(%d) Sent: %s\n", app->id, writeBuffer);
+            //     break;
+            // }
+
             memset(writeBuffer, 0, BUFFER_SIZE);
             snprintf(writeBuffer, BUFFER_SIZE, "Please wait a few minutes...\n");
             send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
             printf("(%d) Sent: %s\n", app->id, writeBuffer);
 
-            sleep(app->cart->shop->distance);
+            sem_t completionSignal;
+            sem_init(&completionSignal, 0, 0);
+            taskManagerAddTask(app->taskManager, app->cart->shop->distance, &completionSignal);
+            sem_wait(&completionSignal);
 
             memset(writeBuffer, 0, BUFFER_SIZE);
             snprintf(writeBuffer, BUFFER_SIZE, "Delivery has arrived and you need to pay %d$\n", getTotalPrice(app->cart));
