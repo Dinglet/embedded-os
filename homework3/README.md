@@ -6,9 +6,11 @@ In this homework, we will continue with the contents of [homework 2](../homework
 
 ## Specification
 
-- All deliveries are served by only one single delivery person, and one customer is served at a time.
+- All deliveries are served by two delivery persons and multiple customers are served at a time.
     - When a customer connects to the system, the connection continues until the order is canceled or the order is delivered.
-    - While one customer is connected, no other customer will be connected.
+    - While one customer is connected, another customer can be connected.
+    - When multiple customers are connected at the same time, the server must be able to respond to the orders sent by these customers. However, due to the limited number of delivery persons, the delivery time may be longer.
+    - The FCFS (first-come-first-served) strategy is used for delivery. According to the order received by the server, the order will be assigned to the delivery person who needs shorter waiting time.
 - The commands that a customer can execute are
     - `shop list`,
     - `order <item> <amount>`,
@@ -82,7 +84,25 @@ In this homework, we will continue with the contents of [homework 2](../homework
     ​​​​​​​​​​​​​​​​​​​​​​​​​​​Please order some meals
     ```
 
-    - server (when you have ordered something)
+    - server (when a delivery will more than 30 seconds)
+
+    ```text
+    ​​​​​​​​​​​​​​​​​​​​​​​​​​Your delivery will take a long time, do you want to wait?
+    ```
+
+    - client (confirming the long wait)
+
+    ```text
+    Yes
+    ```
+
+    - client (refusing the long wait and cancel the order)
+
+    ```text
+    No
+    ```
+
+    - server (after the client confirms the order)
 
     ```text
     Please wait a few minutes...
