@@ -92,6 +92,9 @@ void taskManagerAddTask(TaskManagerPtr taskManager, int executionTime, sem_t *pC
     size_t index;
     double estimatedTime = taskManagerEstimateWaitingTime(taskManager, executionTime, &index);
 
+    pthread_mutex_lock(&taskManager->taskConsumers[index]->mutex);
     taskListAdd(&taskManager->taskLists[index], &task);
+    pthread_mutex_unlock(&taskManager->taskConsumers[index]->mutex);
+
     sem_post(&taskManager->taskConsumers[index]->signalTaskArrival);
 }

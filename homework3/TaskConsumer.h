@@ -13,6 +13,7 @@ typedef struct TaskConsumer *TaskConsumerPtr;
 struct TaskConsumer
 {
     TaskListPtr taskList;
+    pthread_mutex_t mutex;
 
     pthread_t thread;
     sem_t signalTaskArrival;

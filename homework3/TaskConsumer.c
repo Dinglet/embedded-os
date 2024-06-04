@@ -23,7 +23,9 @@ static void *taskConsumerThread(void *arg)
 
         sem_post(taskGetCompletionSignal(task));
 
+        pthread_mutex_lock(&taskConsumer->mutex);
         taskListPopFront(taskList);
+        pthread_mutex_unlock(&taskConsumer->mutex);
     }
 
     return NULL;
@@ -38,6 +40,7 @@ TaskConsumerPtr createTaskConsumer(TaskListPtr taskList)
     }
 
     taskConsumer->taskList = taskList;
+    pthread_mutex_init(&taskConsumer->mutex, NULL);
 
     pthread_create(&taskConsumer->thread, NULL, taskConsumerThread, taskConsumer);
 
@@ -47,6 +50,7 @@ TaskConsumerPtr createTaskConsumer(TaskListPtr taskList)
 void destroyTaskConsumer(TaskConsumerPtr taskConsumer)
 {
     pthread_cancel(taskConsumer->thread);
+    pthread_mutex_destroy(&taskConsumer->mutex);
     free(taskConsumer);
 }
 
@@ -64,6 +68,7 @@ struct timespec taskConsumerGetStartTime(TaskConsumerPtr taskConsumer)
 
 double taskConsumerEstimateRemainingTime(TaskConsumerPtr taskConsumer)
 {
+    int taskListTime;
     struct timespec startTime, currentTime;
     double elapsedTime;
 
@@ -72,5 +77,9 @@ double taskConsumerEstimateRemainingTime(TaskConsumerPtr taskConsumer)
 
     elapsedTime = difftime(currentTime.tv_sec, startTime.tv_sec) + 1e-9 * (currentTime.tv_nsec - startTime.tv_nsec);
 
-    return taskListGetTime(taskConsumer->taskList) - elapsedTime;
+    pthread_mutex_lock(&taskConsumer->mutex);
+    taskListTime = taskListGetTime(taskConsumer->taskList);
+    pthread_mutex_unlock(&taskConsumer->mutex);
+
+    return taskListTime - elapsedTime;
 }
