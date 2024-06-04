@@ -6,7 +6,7 @@
 
 struct Node
 {
-    TaskPtr task;
+    Task task;
     NodePtr next;
 };
 
@@ -70,7 +70,7 @@ void taskListAdd(TaskListPtr taskList, TaskPtr task)
         return;
     }
 
-    node->task = task;
+    initTask(&node->task, taskGetTime(task), task->pCompletionSignal);
     node->next = NULL;
 
     if (taskList->head == NULL)
@@ -84,13 +84,39 @@ void taskListAdd(TaskListPtr taskList, TaskPtr task)
     taskList->tail = node;
 }
 
+TaskPtr taskListFront(TaskListPtr taskList)
+{
+    if (taskList->head == NULL)
+    {
+        return NULL;
+    }
+
+    return &taskList->head->task;
+}
+
+void taskListPopFront(TaskListPtr taskList)
+{
+    if (taskList->head == NULL)
+    {
+        return;
+    }
+
+    NodePtr node = taskList->head;
+    taskList->head = node->next;
+    if (taskList->head == NULL)
+    {
+        taskList->tail = NULL;
+    }
+    free(node);
+}
+
 int taskListGetTime(TaskListPtr taskList)
 {
     int time = 0;
     NodePtr node = taskList->head;
     while (node)
     {
-        time += taskGetTime(node->task);
+        time += taskGetTime(&node->task);
         node = node->next;
     }
     return time;

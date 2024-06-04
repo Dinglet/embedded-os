@@ -27,4 +27,8 @@ int taskListIsEmpty(TaskListPtr taskList);
 
 void taskListAdd(TaskListPtr taskList, TaskPtr task);
 
+TaskPtr taskListFront(TaskListPtr taskList);
+
+void taskListPopFront(TaskListPtr taskList);
+
 int taskListGetTime(TaskListPtr taskList);

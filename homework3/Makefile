@@ -5,7 +5,7 @@ all: hw3
 hw3: hw3.o DeliveryManager.o DeliveryApp.o Command.o Shop.o Cart.o common.o libtasks.a
 	$(CC) $(CFLAGS) -pthread -L. -ltasks -o $@ $^
 
-libtasks.a: Task.o TaskList.o TaskManager.o
+libtasks.a: Task.o TaskList.o TaskConsumer.o TaskManager.o
 	ar rcs $@ $^
 
 %.o: %.c

@@ -1,14 +1,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
+#include <semaphore.h>
 
 #include "TaskList.h"
+#include "TaskConsumer.h"
 #include "TaskManager.h"
 
 struct TaskManager
 {
     TaskListPtr taskLists;
     int nLists;
+
+    TaskConsumerPtr *taskConsumers;
 };
 
 TaskManagerPtr createTaskManager(int nLists)
@@ -22,18 +26,40 @@ TaskManagerPtr createTaskManager(int nLists)
     taskManager->taskLists = createTaskLists(nLists);
     taskManager->nLists = nLists;
 
+    taskManager->taskConsumers = (TaskConsumerPtr *)malloc(nLists * sizeof(TaskConsumerPtr));
+    if (taskManager->taskConsumers == NULL)
+    {
+        destroyTaskLists(taskManager->taskLists, nLists);
+        free(taskManager);
+        return NULL;
+    }
+
+    for (int i = 0; i < nLists; i++)
+    {
+        taskManager->taskConsumers[i] = createTaskConsumer(&taskManager->taskLists[i]);
+    }
+
     return taskManager;
 }
 
 void destroyTaskManager(TaskManagerPtr taskManager)
 {
+    for (int i = 0; i < taskManager->nLists; i++)
+    {
+        destroyTaskConsumer(taskManager->taskConsumers[i]);
+    }
     destroyTaskLists(taskManager->taskLists, taskManager->nLists);
     free(taskManager);
 }
 
-int taskManagerEstimateWaitingTime(TaskManagerPtr taskManager, int executionTime)
+int taskManagerEstimateWaitingTime(TaskManagerPtr taskManager, int executionTime, size_t *pIndex)
 {
     int estimatedTime = INT_MAX - executionTime;
+
+    if (pIndex != NULL)
+    {
+        *pIndex = 0;
+    }
 
     for (int i = 0; i < taskManager->nLists; i++)
     {
@@ -43,6 +69,10 @@ int taskManagerEstimateWaitingTime(TaskManagerPtr taskManager, int executionTime
         if (time < estimatedTime)
         {
             estimatedTime = time;
+            if (pIndex != NULL)
+            {
+                *pIndex = i;
+            }
         }
     }
 
@@ -51,9 +81,12 @@ int taskManagerEstimateWaitingTime(TaskManagerPtr taskManager, int executionTime
 
 void taskManagerAddTask(TaskManagerPtr taskManager, int executionTime, sem_t *pCompletionSignal)
 {
-    //TODO: Add task to the shortest list considering the estimated time
+    Task task;
+    initTask(&task, executionTime, pCompletionSignal);
 
-    sleep(executionTime);
+    size_t index;
+    int estimatedTime = taskManagerEstimateWaitingTime(taskManager, executionTime, &index);
 
-    sem_post(pCompletionSignal);
+    taskListAdd(&taskManager->taskLists[index], &task);
+    sem_post(&taskManager->taskConsumers[index]->signalTaskArrival);
 }
