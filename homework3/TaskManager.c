@@ -52,20 +52,25 @@ void destroyTaskManager(TaskManagerPtr taskManager)
     free(taskManager);
 }
 
-int taskManagerEstimateWaitingTime(TaskManagerPtr taskManager, int executionTime, size_t *pIndex)
+double taskManagerEstimateWaitingTime(TaskManagerPtr taskManager, int executionTime, size_t *pIndex)
 {
-    int estimatedTime = INT_MAX - executionTime;
+    double estimatedTime = 0;
 
+    if (taskManager->nLists == 0)
+    {
+        //ERROR: no task list
+        return estimatedTime;
+    }
+
+    estimatedTime = taskConsumerEstimateRemainingTime(taskManager->taskConsumers[0]);
     if (pIndex != NULL)
     {
         *pIndex = 0;
     }
 
-    for (int i = 0; i < taskManager->nLists; i++)
+    for (int i = 1; i < taskManager->nLists; i++)
     {
-        #include "TaskList.h" // Include the header file that defines the taskListGetTime function
-
-        int time = taskListGetTime(&taskManager->taskLists[i]);
+        double time = taskConsumerEstimateRemainingTime(taskManager->taskConsumers[i]);
         if (time < estimatedTime)
         {
             estimatedTime = time;
@@ -85,7 +90,7 @@ void taskManagerAddTask(TaskManagerPtr taskManager, int executionTime, sem_t *pC
     initTask(&task, executionTime, pCompletionSignal);
 
     size_t index;
-    int estimatedTime = taskManagerEstimateWaitingTime(taskManager, executionTime, &index);
+    double estimatedTime = taskManagerEstimateWaitingTime(taskManager, executionTime, &index);
 
     taskListAdd(&taskManager->taskLists[index], &task);
     sem_post(&taskManager->taskConsumers[index]->signalTaskArrival);
