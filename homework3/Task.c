@@ -4,13 +4,19 @@
 
 #include "Task.h"
 
-struct Task
+void initTask(TaskPtr task, int time, sem_t *pCompletionSignal)
 {
-    int executionTime;
-    sem_t completionSignal;
-};
+    task->executionTime = time;
+    task->pCompletionSignal = pCompletionSignal;
+}
 
-TaskPtr createTask(int time)
+void cleanTask(TaskPtr task)
+{
+    task->executionTime = 0;
+    task->pCompletionSignal = NULL;
+}
+
+TaskPtr createTask(int time, sem_t *pCompletionSignal)
 {
     TaskPtr task = (TaskPtr)malloc(sizeof(Task));
     if (task == NULL)
@@ -18,18 +24,23 @@ TaskPtr createTask(int time)
         return NULL;
     }
 
-    task->executionTime = time;
-    sem_init(&task->completionSignal, 0, 0);
+    initTask(task, time, pCompletionSignal);
 
     return task;
 }
 
 void destroyTask(TaskPtr task)
 {
+    cleanTask(task);
     free(task);
 }
 
 int taskGetTime(TaskPtr task)
 {
     return task->executionTime;
+}
+
+sem_t *taskGetCompletionSignal(TaskPtr task)
+{
+    return task->pCompletionSignal;
 }
