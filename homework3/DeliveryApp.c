@@ -26,6 +26,7 @@ struct DeliveryApp
     CartPtr cart;
     int id;
     TaskManagerPtr taskManager;
+    int bNeedToWait;
 };
 
 DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nShops, TaskManagerPtr taskManager)
@@ -44,18 +45,17 @@ DeliveryAppPtr createDeliveryApp(int clientSocket, struct Shop *shops[], int nSh
     app->id = countApp++;
 
     app->taskManager = taskManager;
+    app->bNeedToWait = 0;
 
     return app;
 }
 
 void destroyDeliveryApp(DeliveryAppPtr app)
 {
-    if (app == NULL)
+    if (app->cart != NULL)
     {
-        return;
+        destroyCart(app->cart);
     }
-
-    destroyCart(app->cart);
     free(app);
 }
 
@@ -179,15 +179,25 @@ void runDeliveryApp(DeliveryAppPtr app)
                 break;
             }
 
-            printf("(%d) Estimated waiting time: %f\n", app->id, taskManagerEstimateWaitingTime(app->taskManager, app->cart->shop->distance, NULL));
-            // if (taskManagerEstimateWaitingTime(app->taskManager, app->cart->shop->distance, NULL) >= 30)
-            // {
-            //     memset(writeBuffer, 0, BUFFER_SIZE);
-            //     snprintf(writeBuffer, BUFFER_SIZE, "Your delivery will take a long time, do you want to wait?\n");
-            //     send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
-            //     printf("(%d) Sent: %s\n", app->id, writeBuffer);
-            //     break;
-            // }
+            double estimatedWaitingTime = taskManagerEstimateWaitingTime(app->taskManager, app->cart->shop->distance, NULL);
+            // printf("(%d) Estimated waiting time: %f\n", app->id, estimatedWaitingTime);
+            if (estimatedWaitingTime >= 30)
+            {
+                app->bNeedToWait = 1;
+
+                memset(writeBuffer, 0, BUFFER_SIZE);
+                snprintf(writeBuffer, BUFFER_SIZE, "Your delivery will take a long time, do you want to wait?\n");
+                send(app->clientSocket, writeBuffer, BUFFER_SIZE, 0);
+                // printf("(%d) Sent: %s\n", app->id, writeBuffer);
+                break;
+            }
+
+        case kYes:
+            if (command->type == kYes && app->bNeedToWait == 0)
+            {
+                // if user didn't need to wait, ignore the yes command
+                break;
+            }
 
             memset(writeBuffer, 0, BUFFER_SIZE);
             snprintf(writeBuffer, BUFFER_SIZE, "Please wait a few minutes...\n");
@@ -206,6 +216,11 @@ void runDeliveryApp(DeliveryAppPtr app)
 
             app->bRunning = 0;
             break;
+        case kNo:
+            if (app->bNeedToWait == 0)
+            {
+                break;
+            }
         case kCancel:
             app->bRunning = 0;
             break;

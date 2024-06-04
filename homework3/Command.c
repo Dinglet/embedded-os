@@ -9,6 +9,8 @@ const char *kCommandShopList = "shop list";
 const char *kCommandOrder = "order";
 const char *kCommandConfirm = "confirm";
 const char *kCommandCancel = "cancel";
+const char *kCommandYes = "Yes";
+const char *kCommandNo = "No";
 
 CommandPtr createCommand(char *buffer)
 {
@@ -41,6 +43,16 @@ CommandPtr createCommand(char *buffer)
     {
         command->type = kCancel;
         commandLength = strlen(kCommandCancel);
+    }
+    else if (strcmp(buffer, kCommandYes) == 0)
+    {
+        command->type = kYes;
+        commandLength = strlen(kCommandYes);
+    }
+    else if (strcmp(buffer, kCommandNo) == 0)
+    {
+        command->type = kNo;
+        commandLength = strlen(kCommandNo);
     }
 
     if (command->type != kInvalid)

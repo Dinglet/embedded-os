@@ -11,6 +11,8 @@ enum CommandType
     kOrder,
     kConfirm,
     kCancel,
+    kYes,
+    kNo
 };
 
 struct Command
