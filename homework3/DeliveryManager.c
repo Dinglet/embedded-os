@@ -60,7 +60,7 @@ void runDeliveryManager(DeliveryManagerPtr manager)
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
         DeliveryAppPtr app = createDeliveryApp(clientSocket, manager->shops, manager->nShops, manager->taskManager);
-        pthread_create(&thread, &attr, deliverAppHandler, &app);
+        pthread_create(&thread, &attr, deliverAppHandler, app);
     }
     if (clientSocket < 0)
     {
@@ -71,7 +71,7 @@ void runDeliveryManager(DeliveryManagerPtr manager)
 
 void *deliverAppHandler(void *arg)
 {
-    DeliveryAppPtr app = *(DeliveryAppPtr *)arg;
+    DeliveryAppPtr app = (DeliveryAppPtr)arg;
     runDeliveryApp(app);
     close(getSocket(app));
     destroyDeliveryApp(app);
