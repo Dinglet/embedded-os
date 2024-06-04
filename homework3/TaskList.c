@@ -4,22 +4,10 @@
 #include "Task.h"
 #include "TaskList.h"
 
-// linked list node
-struct Node;
-typedef struct Node Node;
-typedef struct Node *NodePtr;
-
 struct Node
 {
     TaskPtr task;
     NodePtr next;
-};
-
-// linked list
-struct TaskList
-{
-    NodePtr head;
-    NodePtr tail;
 };
 
 // private functions

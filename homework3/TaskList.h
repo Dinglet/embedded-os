@@ -2,9 +2,21 @@
 
 #include "Task.h"
 
+// linked list node
+struct Node;
+typedef struct Node Node;
+typedef struct Node *NodePtr;
+
 struct TaskList;
 typedef struct TaskList TaskList;
 typedef struct TaskList *TaskListPtr;
+
+// linked list
+struct TaskList
+{
+    NodePtr head;
+    NodePtr tail;
+};
 
 TaskListPtr createTaskList();
 void destroyTaskList(TaskListPtr taskList);
