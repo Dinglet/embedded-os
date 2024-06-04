@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "TaskList.h"
 #include "TaskManager.h"
@@ -32,8 +33,20 @@ void destroyTaskManager(TaskManagerPtr taskManager)
 
 int taskManagerEstimateWaitingTime(TaskManagerPtr taskManager, int executionTime)
 {
-    //TODO
-    return 0;
+    int estimatedTime = INT_MAX - executionTime;
+
+    for (int i = 0; i < taskManager->nLists; i++)
+    {
+        #include "TaskList.h" // Include the header file that defines the taskListGetTime function
+
+        int time = taskListGetTime(&taskManager->taskLists[i]);
+        if (time < estimatedTime)
+        {
+            estimatedTime = time;
+        }
+    }
+
+    return estimatedTime + executionTime;
 }
 
 void taskManagerAddTask(TaskManagerPtr taskManager, int executionTime, sem_t *pCompletionSignal)
