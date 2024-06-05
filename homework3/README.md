@@ -125,3 +125,9 @@ In this homework, we will continue with the contents of [homework 2](../homework
     ```bash
     nc localhost <port>
     ```
+
+- `hw3_checker` or `hw3_checker_2` (provided by teaching assistants) as multiple clients
+
+    ```bash
+    hw3_checker 127.0.0.1 <port>
+    ```
