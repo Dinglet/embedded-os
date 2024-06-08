@@ -7,6 +7,10 @@ have their own license file or files that have their own license notice. In
 such cases, the license file in the subdirectory or the license notice in the
 file takes precedence.
 
+The subdirectories or files excluded from the original MIT license are:
+
+- lab3-1/lab3-1_driver.c
+
 The original MIT License text follows:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
