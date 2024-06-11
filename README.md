@@ -1,5 +1,20 @@
 # Embedded Operating Systems
 
+This repository collects most of the code that I developed during the 2024 Spring Semester Embedded Operating Systems[^syllabus], instructed by Prof. HUANG, YU-LUN. It includes lab and homework assignments. Lab assignments correspond to a single course topic and are given after each practical session. Homework assignments encompass multiple course topics and are given once the relevant topics have been covered.
+
+[^syllabus]: Course syllabus: <https://timetable.nycu.edu.tw/?r=main/crsoutline&Acy=112&Sem=2&CrsNo=535314&lang=en-us>
+
+Lab and homework assignments in this repository are:
+
+- Lab 3-1: LED Banner
+- Lab 4: LED Banner Using a Sixteen-Segment Display
+- Lab 5: Steam Locomotives
+- Lab 6: Web ATM
+- Lab 7: Number Guessing Game
+- Homework 1: Delivery Platform (Standalone Version)
+- Homework 2: Delivery Platform (Online Version)
+- Homework 3: Delivery Platform (Multi-User Online Version)
+
 ## Lab 3: Driver (Part I) - Using GPIO in Raspberry Pi
 
 Deadline: 2024-04-04
