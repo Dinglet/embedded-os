@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2024 RTES Lab, Institute of Electrical and Control Engineering, National Yang Ming Chiao Tung University
+ * 
+ * All rights reserved.
+ */
 #include <stdio.h>      // fprintf(), perror()
 #include <stdlib.h>     // exit()
 #include <string.h>     // memset()

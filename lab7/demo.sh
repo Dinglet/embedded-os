@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Copyright (c) 2024 RTES Lab, Institute of Electrical and Control Engineering, National Yang Ming Chiao Tung University
+#
+# All rights reserved.
+
 SESSION="lab7"
 KEY="1234"
 GUESS="43"

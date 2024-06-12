@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+
+# Copyright (c) 2024 RTES Lab, Institute of Electrical and Control Engineering, National Yang Ming Chiao Tung University
+#
+# All rights reserved.
+
 '''eleven segment display of two hex digits.'''
 import sys
 

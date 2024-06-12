@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Copyright (c) 2024 RTES Lab, ECE, National Yang Ming Chiao Tung University
+#
+# All rights reserved.
+
 set -x #prints each command and its arguments to the terminal before executing it
 # set -e #Exit immediately if a command exits with a non-zero status
 
