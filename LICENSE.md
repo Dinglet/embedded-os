@@ -1,4 +1,4 @@
-Modified MIT License
+# Modified MIT License
 
 Copyright (c) 2024 HUANG, SHIEN-TING
 
@@ -9,15 +9,15 @@ file takes precedence.
 
 The subdirectories or files excluded from the original MIT license are:
 
-- lab3-1/lab3-1_driver.c
-- lab4/demo.sh
-- lab4/reader.c
-- lab4/seg.py
-- lab5/demo.sh
-- lab6/examples/
-- lab6/demo.sh
-- lab7/examples/
-- lab7/demo.sh
+- [lab3-1/lab3-1_driver.c](./lab3-1/lab3-1_driver.c)
+- [lab4/demo.sh](./lab4/demo.sh)
+- [lab4/reader.c](./lab4/reader.c)
+- [lab4/seg.py](./lab4/seg.py)
+- [lab5/demo.sh](./lab5/demo.sh)
+- [lab6/examples/](./lab6/examples/)
+- [lab6/demo.sh](./lab6/demo.sh)
+- [lab7/examples/](./lab7/examples/)
+- [lab7/demo.sh](./lab7/demo.sh)
 
 The original MIT License text follows:
 
