@@ -14,9 +14,7 @@ The subdirectories or files excluded from the original MIT license are:
 - [lab4/reader.c](./lab4/reader.c)
 - [lab4/seg.py](./lab4/seg.py)
 - [lab5/demo.sh](./lab5/demo.sh)
-- [lab6/examples/](./lab6/examples/)
 - [lab6/demo.sh](./lab6/demo.sh)
-- [lab7/examples/](./lab7/examples/)
 - [lab7/demo.sh](./lab7/demo.sh)
 
 The original MIT License text follows:

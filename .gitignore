@@ -49,23 +49,9 @@ lab4/writer
 
 lab5/lab5
 
-lab6/examples/makesem
-lab6/examples/rmsem
-lab6/examples/doodle
-lab6/examples/race
-lab6/examples/mutex
-lab6/examples/pipe
-lab6/examples/select
-lab6/examples/shm_server
-lab6/examples/shm_client
 lab6/server
 lab6/client
 
-lab7/examples/sig_catch
-lab7/examples/sig_count
-lab7/examples/timer
-lab7/examples/timer_diff
-lab7/examples/reaper
 lab7/game
 lab7/guess
 

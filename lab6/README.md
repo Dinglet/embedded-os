@@ -12,34 +12,4 @@ On my virtual machine, the kernel parameter `net.ipv4.ip_local_port_range` is se
 
 ### Server
 
-The server establishes a socket connection on the port specified by the first argument. Whenever it accepts a new connection request, it starts a new thread to receive data related to a series of transactions. The critical section involves updating and printing the account balance, and it is protected like the programs [`examples/doodle`](./examples/doodle.c) and [`examples/race`](./examples/race.c) do.
-
-## Appendix A - Examples
-
-### A.1 Semaphore
-
-There are 2 types of semaphores in Linux, namely System V semaphores and POSIX semaphores[^semaphore-type]. In the directory, examples are example code to create/remove/use System V semantics.
-
-[^semaphore-type]: Citation needed
-
-- `makesem` creates a semaphore.
-- `rmsem` removes a semaphore.
-- `doodle` is an application with the wait (P) and signal (V) operations implemented, using a semaphore created previously.
-
-#### Race Condition
-
-To compile the application `race` with the semaphore feature, run `make CFLAGS="-DUSE_SEM" race`. Otherwise, the command `make race` compiles with the macro `USE_SEM` undefined.
-
-Before running `race`, run `echo 0 > counter.txt` to initialize a file.
-
-### A.2 Mutex
-
-In the mutex example application `mutex`, multiple threads are about to enter a critical section. A mutex shared with those threads protects the critical section.
-
-### A.3 Pipe
-
-The process `pipe <file>` opens the `<file>` for reading and then transfers contents to another process with a pipe. The receiver writes received contents to the standard output.
-
-#### Select
-
-### A.4 Shared Memory
+The server establishes a socket connection on the port specified by the first argument. Whenever it accepts a new connection request, it starts a new thread to receive data related to a series of transactions. The critical section involves updating and printing the account balance, and it is protected by a System V semaphore.
