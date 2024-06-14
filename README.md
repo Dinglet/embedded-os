@@ -15,6 +15,8 @@ Lab and homework assignments in this repository are:
 - Homework 2: Delivery Platform (Online Version)
 - Homework 3: Delivery Platform (Multi-User Online Version)
 
+The code for our group’s final project is stored in the [Dinglet/eos_final](https://github.com/Dinglet/eos_final) repository on GitHub. However, it contains only a portion of the entire project. This is because some group members have not uploaded their code portions to this repository.
+
 ## License
 
 The contents of this repository are generally licensed under the terms of the MIT license, except for certain subdirectories or files. These exceptions are subdirectories or files that contain their own license file or license notice. In these cases, the specified license within the subdirectory or file takes precedence. Please see [the LICENSE file](./LICENSE.md) for more information.
